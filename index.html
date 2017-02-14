@@ -1,0 +1,60 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="">
+
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="description" content="Portfolio">
+<meta name="author" content="Charles Wang">
+<title>Charles Wang Senior Design</title>
+<link href="css/style.css" rel="stylesheet" type="text/css">
+    
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+
+<script id="vertShader" type="shader">
+varying vec2 vUv;
+attribute vec3 normal;
+void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix *
+                  modelViewMatrix * vec4(position, 1.0 );
+}
+</script>
+<script id="fragShader" type="shader">
+precision highp float;
+varying vec2 vUv;
+uniform float color;
+void main(void) {    
+    
+    gl_FragColor = vec4(vec3(color), 1.0);
+}
+</script>
+
+
+<!-- Import any font of your choice-->
+<!--The following script tag downloads a font from the Adobe Edge Web Fonts server for use within the web page. We recommend that you do not modify it.-->
+
+</head>
+
+<body>
+<!--************************************************************************
+Container starts here
+****************************************************************************-->
+    <section class="headerStyle" id="TitleHeader"> 
+    </section>
+
+
+    <script src="js/three.min.js"></script>
+    <script src="js/block.js"></script>
+    <script src="js/voxelstructure.js"> </script>
+    <script src="js/puzzlegenerator.js"> </script>
+    <script src="js/header3d.js"></script>
+    
+</body>
+</html>
