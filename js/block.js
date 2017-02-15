@@ -1,26 +1,55 @@
 class Side {
-    constructor(block) {
-        this.id = Side.id++;
+    constructor(block, side, id) {
         this.block = block;
+        this.id = id;
         this.sym;
+        this.tempsym;
         this.neighbors = [];
+        this.tempneighbors = [];
+        this.side = side;
     }
 
     addNeighbor(neighbor) {
         this.neighbors.push(neighbor);
     }
+
+    inNeighbors(side) {
+        for(var i = 0; i < this.neighbors.length; i++) {
+            if(this.neighbors[i] == side) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    breakOldConnection(faces) {
+        console.log("idx: " + this.id);
+        for(var i = 0; i < faces.length; i++) {
+            if(faces[i] != null) {
+                var a = this.inNeighbors(faces[i].sidea)
+                if(a != -1) {
+                    console.log(this.neighbors);
+                    console.log(a);
+                    this.neighbors.splice(a,1);
+                    console.log(this.neighbors);
+                }
+                var b = this.inNeighbors(faces[i].sideb);
+                if(b != -1) {
+                    this.neighbors.splice(b,1);
+                }
+        }
+        }
+    }
 }
-
-
-Side.id = 0;
 
 class Block {
   constructor(x, y , z, n, dir) {
-    this.sidea = new Side(this);
-    this.sideb = new Side(this);
+    this.id = Block.id++;
+    this.dir = dir;
+    this.sidea = new Side(this, 1, this.id);
+    this.sideb = new Side(this, -1, this.id);
     this.sidea.sym = this.sideb;
     this.sideb.sym = this.sidea;
-    this.id = Block.id++;
     this.edges = [];
     this.x = x;
     this.y = y;
@@ -86,6 +115,16 @@ class Block {
   getSideB() {
       return this.sideb;
   }
+
+  getPos(i) {
+      if(i ==0) {
+          return this.x;
+      } else if (i == 1) {
+          return this.y;
+      } else if (i == 2) {
+          return this.z;
+      }
+  }
 }
 
 Block.id = 0;
@@ -123,53 +162,59 @@ class Edge {
         var return_arr = [];
         for(var i = 0; i < this.faces.length; i++) {
             if(this.faces[i] != null && this.faces[i].id != id) {
-                return_arr.push(this.faces[i]);
+                return_arr[i] = (this.faces[i]);
             }
         }
         return return_arr;
     }
 
+
     setFace(face) {
+        var idx = this.getFaceidx(face.n,face.x,face.y,face.z);
+        this.faces[idx] = face;
+    }
+
+    getFaceidx(n,x,y,z) {
         if(this.n == 0) {
-            if (face.n == 2 ){
-                if(face.z < this.z) {
-                    this.faces[0] = face;
+            if (n == 2 ){
+                if(y < this.y) {
+                    return 1;
                 } else  {
-                    this.faces[2] = face;
+                    return 3;
                 }
-            } else if (face.n == 1) {
-                if(face.z < this.z) {
-                    this.faces[3] = face;
+            } else if (n == 1) {
+                if(z < this.z) {
+                    return 2;
                 } else {
-                    this.faces[1] = face;
+                    return 0;
                 }
             }
         } if(this.n == 1) {
-            if (face.n == 2 ){
-                if(face.x < this.x) {
-                    this.faces[3] = face;
+            if (n == 2 ){
+                if(x < this.x) {
+                    return 2;
                 } else  {
-                    this.faces[1] = face;
+                    return 0;
                 }
-            } else if (face.n == 0) {
-                if(face.z < this.z) {
-                    this.faces[2] = face;
+            } else if (n == 0) {
+                if(z < this.z) {
+                    return 1;
                 } else {
-                    this.faces[0] = face;
+                    return 3;
                 }
             }
         } if(this.n == 2) {
-            if (face.n == 0) {
-                if(face.y < this.y) {
-                    this.faces[3] = face;
+            if (n == 0) {
+                if(y < this.y) {
+                    return 2;
                 } else {
-                    this.faces[1] = face;
+                    return 0;
                 }
-            } else if (face.n == 1) {
-                if(face.x < this.x) {
-                    this.faces[2] = face;
+            } else if (n == 1) {
+                if(x < this.x) {
+                    return 0;
                 } else {
-                    this.faces[0] = face;
+                    return 2;
                 }
             }
 

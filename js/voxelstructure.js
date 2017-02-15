@@ -1,3 +1,13 @@
+function validIdx(arr) {
+    var return_arr = [];
+    for(var i =0; i < arr.length; i++) {
+        if(arr[i] != null) {
+            return_arr.push(i);
+        }
+    }
+    return return_arr;
+}
+
 class Voxel {
     constructor(x,y,z) {
         this.blocks = [];
@@ -9,6 +19,7 @@ class Voxel {
     }
     setBlock(i) {
         var block = new Block(this.x,this.y,this.z, i, 1);
+        //console.log("test pos: " + block.getPos(0) + " " + block.getPos(1) + " " + block.getPos(2));
         this.blocks[i] = block;
         return block;
     }
@@ -140,23 +151,148 @@ class VoxelStruct {
             var x_edge2 = this.get(x,y+1,z).setEdge(0);
             var block = curr_vox.getBlock(i);
             var all_edges = [y_edge2, x_edge, y_edge, x_edge2];
-            block.setAllEdges([all_edges]);
+            block.setAllEdges(all_edges);
             for(var j = 0; j < all_edges.length; j++) {
                 all_edges[j].setFace(block);
             }
         }
+    } 
+
+    connectFaces(block,adjacentToEdge,edge) {
+        var block_idx = edge.getFaceidx(block.n,block.x,block.y,block.z);
+        console.log("idx: " + block_idx);
+        console.log("dir: " + block.dir);
+        var u = (edge.n + 2)%3;
+        var r = edge.n + 1;
+        console.log("mod: ");
+        console.log(edge.n + " " + u);
+        var loop = true;
+        var cw_side;
+        if((block_idx == 0 || block_idx == 1)) {
+            if(block.dir > 0) {
+                cw_side = block.sidea;
+            } else {
+                cw_side = block.sidedb;
+            }
+        } else {
+            if(block.dir > 0) {
+                cw_side = block.sideb;
+            } else {
+                cw_side = block.sideda;
+            }
+        }
+        var ccw_side;
+        if(cw_side.side > 0) {
+            ccw_side = block.sideb;
+        } else {
+            ccw_side = block.sidea;
+        }
+        console.log(cw_side);
+        console.log(ccw_side);
+        console.log("block : " + block_idx);
+        var ef = (block_idx-1);
+        if(ef < 0) {
+            ef = 3;
+        }
+        console.log("ef : " + ef);
+        var num = 0;
+        while (num < 4) {
+            if(adjacentToEdge[ef] != null) {
+                var adjblock = adjacentToEdge[ef];
+                if((ef == 0 || ef == 1)) {
+                if(adjblock.dir > 0) {
+                    cw_side.addNeighbor(adjblock.sideb);
+                    adjblock.sideb.breakOldConnection(adjacentToEdge);
+                    adjblock.sideb.addNeighbor(cw_side);
+                    num = 4;
+                } else {
+                    cw_side.addNeighbor(adjblock.sidea);
+                    adjblock.sidea.breakOldConnection(adjacentToEdge);
+                    adjblock.sidea.addNeighbor(cw_side);
+                    num = 4;
+                }
+                } else {
+                if(adjblock.dir > 0) {
+                    cw_side.addNeighbor(adjblock.sidea);
+                    console.log("hi ");
+                    adjblock.sidea.breakOldConnection(adjacentToEdge);
+                    adjblock.sidea.addNeighbor(cw_side);
+                    num = 4;
+                } else {
+                    cw_side.addNeighbor(adjblock.sideb);
+                    adjblock.sideb.breakOldConnection(adjacentToEdge);
+                    adjblock.sideb.addNeighbor(cw_side);
+                    num = 4;
+                }
+                }
+            }
+            console.log("num " + num);
+            num++;
+            ef--;
+            if(ef < 0) {
+                ef = 3;
+            }
+            console.log(ef);
+        }
+        num = 0;
+        ef = (block_idx+1)%4;
+        while (num < 4) {
+            if(adjacentToEdge[ef] != null) {
+                var adjblock = adjacentToEdge[ef];
+                if((ef == 0 || ef == 1)) {
+                if(adjblock.dir > 0) {
+                    ccw_side.addNeighbor(adjblock.sidea);
+                    adjblock.sidea.breakOldConnection(adjacentToEdge);
+                    adjblock.sidea.addNeighbor(ccw_side);
+                    num = 4;
+                } else {
+                    ccw_side.addNeighbor(adjblock.sideb);
+                    adjblock.sideb.breakOldConnection(adjacentToEdge);
+                    adjblock.sideb.addNeighbor(ccw_side);
+                    num = 4;
+                }
+                } else {
+                if(adjblock.dir > 0) {
+                    ccw_side.addNeighbor(adjblock.sideb);
+                    adjblock.sideb.breakOldConnection(adjacentToEdge);
+                    adjblock.sideb.addNeighbor(ccw_side);
+                    num = 4;
+                } else {
+                    ccw_side.addNeighbor(adjblock.sidea);
+                    adjblock.sidea.breakOldConnection(adjacentToEdge);
+                    adjblock.sidea.addNeighbor(ccw_side);
+                    num = 4;
+                }
+                }
+            }
+            num++;
+            ef++;
+            ef = ef%4;
+            console.log(ef);
+        } 
+
     }
 
     setGraphConnections(x,y,z,i) {
         var block = this.get(x,y,z).getBlock(i);
         var adjfaces = [];
         var edges = block.edges;
+        if(i == 2) {
+            console.log(edges);
+        }
         for (var j = 0; j < edges.length; j++) {
             if(edges[j] != null) {
                 var adjacentToEdge = edges[j].getAdjacent(block.id);
+                if(i == 2) {
+                    console.log(adjacentToEdge);
+                }
+                var idxlist = validIdx(adjacentToEdge);
+                if(idxlist.length != 0) {
+                    this.connectFaces(block, adjacentToEdge, edges[j]);
+                }
+                
             }
         }
-        console.log(adjfaces);
     }
 
     createNewBlock(x,y,z,i) {
@@ -169,7 +305,76 @@ class VoxelStruct {
             var block = vox.setBlock(i);
             this.blocks.push(block);
         }
+        //this.testEdge(x,y,z,i);
         this.setEdges(x,y,z,i);
         this.setGraphConnections(x,y,z,i)
+    }
+
+    testNewBlock(x,y,z,i) {
+        this.testEdge(x,y,z,i);
+    }
+
+    testEdge(x,y,z,i) {
+        var curr_vox = this.get(x,y,z);
+        if (i == 0) {
+            var y_edge;
+            var z_edge;
+            if(curr_vox != null) {
+                y_edge = curr_vox.edges[1];
+                z_edge = curr_vox.edges[2];
+            }
+            var y_edge2;
+            if(this.get(x,y,z+1) != null) {
+                y_edge2 = this.get(x,y,z+1).getEdge(1);
+            }
+            var z_edge2;
+            if(this.get(x,y+1,z) != null) {
+                z_edge2 = this.get(x,y+1,z).getEdge(2);
+            }
+            var all_edges = [y_edge2,z_edge,y_edge,z_edge2];
+            console.log("testing edges");
+            console.log(all_edges);
+
+        } else if(i == 1) {
+            var x_edge;
+            var z_edge;
+            if(curr_vox != null) {
+                x_edge = curr_vox.edges[0];
+                z_edge = curr_vox.edges[2];
+            }
+            var x_edge2;
+            if(this.get(x,y,z+1) != null) {
+                x_edge2 = this.get(x,y,z+1).edges[0];
+            }
+            var z_edge2;
+            if(this.get(x+1,y,z) != null) {
+                z_edge2 = this.get(x+1,y,z).edges[2];
+            }
+            var block = curr_vox.getBlock(i);
+            var all_edges = [x_edge,z_edge2,x_edge2,z_edge];
+            console.log("testing edges");
+            console.log(all_edges);
+        } else if(i == 2) {
+            var x_edge;
+            var y_edge;
+            if(curr_vox != null) {
+                x_edge = curr_vox.edges[0];
+                y_edge = curr_vox.edges[1];
+            }
+            var y_edge2;
+            if(this.get(x+1,y,z) != null) {
+                y_edge2 = this.get(x+1,y,z).edges[1];
+            }
+            var x_edge2;
+            if(this.get(x,y+1,z) != null) {
+                x_edge2 = this.get(x,y+1,z).edges[0];
+            }
+            var block = curr_vox.getBlock(i);
+            var all_edges = [y_edge2, x_edge, y_edge, x_edge2];
+            console.log("testing edges");
+            console.log(all_edges);
+        }
+        
+        
     }
 }

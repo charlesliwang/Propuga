@@ -73,8 +73,15 @@ var clock = new THREE.Clock();
       voxelstruct = new VoxelStruct(3);
       console.log("n: " + voxelstruct.getn());
 
-      voxelstruct.createNewBlock(0,0,0,1);
-      voxelstruct.createNewBlock(0,0,0,0);
+      //voxelstruct.createNewBlock(0,0,0,1);
+      //voxelstruct.createNewBlock(0,0,0,0);
+      //voxelstruct.createNewBlock(0,1,0,1);
+      voxelstruct.createNewBlock(0,0,0,2);
+      voxelstruct.createNewBlock(0,1,0,2);
+      //voxelstruct.testNewBlock(0,1,0,2);
+      voxelstruct.createNewBlock(0,2,0,1);
+      voxelstruct.createNewBlock(0,1,1,2);
+      voxelstruct.createNewBlock(0,1,0,1);
       // voxelstruct.testSetBlock(-1,0,0,0);
       // voxelstruct.testSetBlock(-1,1,0,2);
       
@@ -88,7 +95,10 @@ var clock = new THREE.Clock();
       var lambmat = new THREE.MeshLambertMaterial();
       for(var i = 0; i < meshes.length; i++) {
             var block = meshes[i];
-            console.log("normal" + block.n);
+            if(block.id == 4) {
+              console.log("SIDES CHECK ");
+              console.log(block.sidea);
+            }
             var edges = block.getAllEdges();
             // for(var j = 0; j < edges.length; j++) {
             //   console.log(block.getEdge(j));
@@ -112,8 +122,8 @@ var clock = new THREE.Clock();
                 if(vox.getEdge(j) != null) {
                   ++num;
                   var edge = vox.getEdge(j);
-                  console.log(edge.x +  " " + edge.y + " " + edge.z + " " + edge.n);
-                  console.log(edge.getAllFaces());
+                  //console.log(edge.x +  " " + edge.y + " " + edge.z + " " + edge.n);
+                  //console.log(edge.getAllFaces());
                   var line = edge.getLine();   
                   var edge_disp = new THREE.LineSegments( line, edge_mat );
                   scene.add( edge_disp );
