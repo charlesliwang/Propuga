@@ -73,17 +73,7 @@ var clock = new THREE.Clock();
       voxelstruct = new VoxelStruct(3);
       console.log("n: " + voxelstruct.getn());
 
-      //voxelstruct.createNewBlock(0,0,0,1);
-      //voxelstruct.createNewBlock(0,0,0,0);
-      //voxelstruct.createNewBlock(0,1,0,1);
-      voxelstruct.createNewBlock(0,0,0,2);
-      voxelstruct.createNewBlock(0,1,0,2);
-      //voxelstruct.testNewBlock(0,1,0,2);
-      voxelstruct.createNewBlock(0,2,0,1);
-      voxelstruct.createNewBlock(0,1,1,2);
-      voxelstruct.createNewBlock(0,1,0,1);
-      // voxelstruct.testSetBlock(-1,0,0,0);
-      // voxelstruct.testSetBlock(-1,1,0,2);
+      generateDebugPuzzle(voxelstruct);
       
 
       var wire_mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
@@ -95,7 +85,7 @@ var clock = new THREE.Clock();
       var lambmat = new THREE.MeshLambertMaterial();
       for(var i = 0; i < meshes.length; i++) {
             var block = meshes[i];
-            if(block.id == 4) {
+            if(block.id == 3) {
               console.log("SIDES CHECK ");
               console.log(block.sidea);
             }

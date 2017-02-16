@@ -9,8 +9,16 @@ class Side {
         this.side = side;
     }
 
+    updateTempNeighbors() {
+        this.tempneighbors = this.neighbors.slice(0);
+    }
+
     addNeighbor(neighbor) {
         this.neighbors.push(neighbor);
+    }
+
+    addTempNeighbor(neighbor) {
+        this.tempneighbors.push(neighbor);
     }
 
     inNeighbors(side) {
@@ -22,8 +30,16 @@ class Side {
         return -1;
     }
 
+    inTempNeighbors(side) {
+        for(var i = 0; i < this.tempneighbors.length; i++) {
+            if(this.tempneighbors[i] == side) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     breakOldConnection(faces) {
-        console.log("idx: " + this.id);
         for(var i = 0; i < faces.length; i++) {
             if(faces[i] != null) {
                 var a = this.inNeighbors(faces[i].sidea)
@@ -36,6 +52,24 @@ class Side {
                 var b = this.inNeighbors(faces[i].sideb);
                 if(b != -1) {
                     this.neighbors.splice(b,1);
+                }
+        }
+        }
+    }
+
+    breakOldTempConnection(faces) {
+        for(var i = 0; i < faces.length; i++) {
+            if(faces[i] != null) {
+                var a = this.inTempNeighbors(faces[i].sidea)
+                if(a != -1) {
+                    console.log(this.tempneighbors);
+                    console.log(a);
+                    this.tempneighbors.splice(a,1);
+                    console.log(this.tempneighbors);
+                }
+                var b = this.inTempNeighbors(faces[i].sideb);
+                if(b != -1) {
+                    this.tempneighbors.splice(b,1);
                 }
         }
         }
@@ -227,3 +261,61 @@ class Edge {
 }
 
 Edge.id = 0;
+
+class Graph {
+    constructor() {
+        this.sides = [];
+        this.islands = [];
+    }
+
+    contains(side) {
+        for(var i =0; i < this.islands.length; i++) {
+            if(this.islands[i] != null && this.islands[i].contains(side)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    addSidetoIsland(side, i) {
+        this.islands[i].add(side);
+        return i;
+    }
+    
+    addSidetoNewIsland(side) {
+        var island = new Island();
+        island.add(side);
+        this.islands.push(island);
+        return this.islands.length - 1;
+    }
+
+    mergeIslands(i, j) {
+        var i1 = this.islands[i].sides;
+        var i2 = this.islands[j].sides;
+        var allsides = i1.concat(i2);
+        this.islands[i].sides = allsides;
+        this.islands.splice(j,1);
+        return i;
+    }
+    
+}
+
+class Island {
+    constructor() {
+        this.sides = [];
+    }
+
+    contains(side) {
+        for(var i = 0; i < this.sides.length; i++) {
+            if(this.sides[i] == side) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    add(side) {
+        this.sides.push(side);
+    }
+}
+
