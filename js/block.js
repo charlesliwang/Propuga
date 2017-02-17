@@ -297,12 +297,40 @@ class Graph {
         this.islands.splice(j,1);
         return i;
     }
+
+    setIslandSize() {
+        var sum = 0;
+        for(var i = 0; i < this.islands.length; i++) {
+            sum += this.islands[i].sides.length;
+        }
+        sum /= 2;
+        for(var i = 0; i < this.islands.length; i++) {
+            this.islands[i].totalgraphsize = sum;
+        }
+        console.log("sum: " + sum);
+
+    }
     
 }
 
 class Island {
     constructor() {
         this.sides = [];
+        this.visited = [];
+        this.totalgraphsize;
+    }
+
+    popVisited(side) {
+        for(var i = 0; i < this.visited.length; i++) {
+            if(this.visited[i] == side) {
+                this.visited.splice(i,1);
+            }
+        }
+        for(var i = 0; i < this.visited.length; i++) {
+            if(this.visited[i] == side.sym) {
+                this.visited.splice(i,1);
+            }
+        }
     }
 
     contains(side) {
@@ -316,6 +344,48 @@ class Island {
 
     add(side) {
         this.sides.push(side);
+    }
+
+    isValidHGraph(start_side) {
+        this.visited = [];
+        return this.traverseForPath(start_side);
+    }
+
+    hasVisited(side) {
+        for(var i = 0; i < this.visited.length; i++) {
+            if(this.visited[i] == side) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    traverseForPath(side) {
+        if(this.hasVisited(side)) {
+            return false;
+        } else {
+            this.visited.push(side);
+            if(this.contains(side.sym));
+            this.visited.push(side.sym);
+        }
+        var options = side.tempneighbors.slice(0);
+        for(var i = 0; i < options.length; i++) {
+            if(options[i] != null) {
+                if(this.traverseForPath(options[i])) {
+                    console.log(side);
+                    return true;
+                }
+            }
+        }
+        if(this.visited.length == this.sides.length) {
+            console.log("visited.length: " + this.visited.length);
+            console.log("sides.length: " + this.visited.length);
+            console.log(side);
+            return true;
+        } else {
+            this.popVisited(side);
+        }
+        return false;
     }
 }
 

@@ -1,29 +1,35 @@
+var last_voxel;
+
+
+function generate(last, lastlast, voxelstruct, lambmat) {
+    
+}
+
 function generateDebugPuzzle(voxelstruct) {
-      //voxelstruct.createNewBlock(0,0,0,1);
+      //last_voxel = voxelstruct.createNewBlock(0,0,0,1);
       //voxelstruct.createNewBlock(0,0,0,0);
       //voxelstruct.createNewBlock(0,1,0,1);
-      voxelstruct.createNewBlock(0,0,0,2);
-      voxelstruct.createNewBlock(0,1,0,2);
+      
+      last_voxel = voxelstruct.createNewBlock(0,0,0,2);
+      last_voxel = voxelstruct.createNewBlock(0,1,0,2);
+      
       //voxelstruct.testNewBlock(0,1,0,2);
-       voxelstruct.createNewBlock(0,2,0,1);
+        voxelstruct.createNewBlock(0,2,0,1);
        voxelstruct.createNewBlock(0,1,1,2);
       var meshes = voxelstruct.getAllBlocks();
       console.log("TESTUPDATE")
-      for(var i = 0; i < meshes.length; i++) {
-          var mesh = meshes[i];
-          mesh.sidea.updateTempNeighbors();
-          mesh.sideb.updateTempNeighbors();
-      }
-      var result = voxelstruct.testNewBlock(0,1,0,1,1);
-    //var result = voxelstruct.createNewBlock(0,1,0,1);
+      //var result = voxelstruct.testNewBlock(0,1,0,1,1);
+      voxelstruct.createNewBlock(0,1,0,1);
+      //voxelstruct.createNewBlock(1,1,0,1);
+      var result2 = voxelstruct.testNewBlock(-1,1,0,1,1);
       console.log("RESULT: ");
-      console.log(result);
+      console.log(result2);
       console.log("TESTUPDATE")
       for(var i = 0; i < meshes.length; i++) {
           var mesh = meshes[i];
-          console.log(mesh.id);
+          //console.log(mesh.id);
           //console.log(mesh.sidea.neighbors);
-          console.log(mesh.sidea.tempneighbors);
+          //console.log(mesh.sidea.tempneighbors);
       }
       //voxelstruct.createNewBlock(0,1,0,1);
       // voxelstruct.testSetBlock(-1,0,0,0);
@@ -53,4 +59,13 @@ function generatePuzzle(n) {
     return meshes;
 }
 
+
+function generateByPress(voxelstruct,lambmat) {
+    last_voxel = voxelstruct.createNewBlock(last_voxel.x,last_voxel.y,last_voxel.z+1,1,1);
+    mesh = last_voxel.mesh;
+    mesh.material = lambmat;
+    mesh.material.side = THREE.DoubleSide;
+    scene.add(mesh);
+    console.log(voxelstruct.n);
+}
 

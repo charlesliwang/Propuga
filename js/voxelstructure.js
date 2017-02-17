@@ -434,18 +434,26 @@ class VoxelStruct {
             this.setNewVox(x,y,z, new_vox);
         }
         var vox = this.get(x,y,z);
+        var block;
         if(vox.getBlock(i) == null) {
-            var block = vox.setBlock(i);
+            block = vox.setBlock(i);
             this.blocks.push(block);
         }
         //this.testEdge(x,y,z,i);
         this.setEdges(x,y,z,i);
         this.setGraphConnections(x,y,z,i)
+        return block;
     }
 
     testNewBlock(x,y,z,i,dir) {
+        for(var j = 0; j < this.blocks.length; j++) {
+          var mesh = this.blocks[j];
+          mesh.sidea.updateTempNeighbors();
+          mesh.sideb.updateTempNeighbors();
+        }
+
         var edges = this.testEdge(x,y,z,i);
-        this.testGraphConnections(i,dir,x,y,z, edges);
+        this.testGraphConnections(i,dir,x,y,z,edges);
         return this.testGraphValidity();
     }
 
@@ -457,7 +465,11 @@ class VoxelStruct {
             this.addSideToGraph(graph, this.blocks[i].sidea, -1)
             this.addSideToGraph(graph, this.blocks[i].sideb, -1)
         }
-        return graph;
+        graph.setIslandSize();
+        console.log("GRAPH");
+        console.log(graph);
+        var result = graph.islands[0].isValidHGraph(this.blocks[0].sidea);
+        return result;
     }
 
     addSideToGraph(graph, side, last_idx) {
@@ -526,7 +538,6 @@ class VoxelStruct {
             if(this.get(x+1,y,z) != null) {
                 z_edge2 = this.get(x+1,y,z).edges[2];
             }
-            var block = curr_vox.getBlock(i);
             var all_edges = [x_edge,z_edge2,x_edge2,z_edge];
             // console.log("testing edges");
             // console.log(all_edges);
@@ -546,7 +557,6 @@ class VoxelStruct {
             if(this.get(x,y+1,z) != null) {
                 x_edge2 = this.get(x,y+1,z).edges[0];
             }
-            var block = curr_vox.getBlock(i);
             var all_edges = [y_edge2, x_edge, y_edge, x_edge2];
             // console.log("testing edges");
             // console.log(all_edges);

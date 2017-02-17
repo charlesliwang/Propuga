@@ -82,7 +82,7 @@ var clock = new THREE.Clock();
 
 
       var meshes = voxelstruct.getAllBlocks();
-      var lambmat = new THREE.MeshLambertMaterial();
+      lambmat = new THREE.MeshLambertMaterial();
       for(var i = 0; i < meshes.length; i++) {
             var block = meshes[i];
             if(block.id == 3) {
@@ -107,7 +107,7 @@ var clock = new THREE.Clock();
               var geo = new THREE.EdgesGeometry( cube ); // or WireframeGeometry( geometry )
               geo.translate(vox.getX()+0.5,vox.getY()+0.5,vox.getZ()+0.5);
               var wireframe = new THREE.LineSegments( geo, wire_mat );
-              scene.add( wireframe );
+              //scene.add( wireframe );
               for(var j = 0; j < 3; j++) {
                 if(vox.getEdge(j) != null) {
                   ++num;
@@ -116,7 +116,7 @@ var clock = new THREE.Clock();
                   //console.log(edge.getAllFaces());
                   var line = edge.getLine();   
                   var edge_disp = new THREE.LineSegments( line, edge_mat );
-                  scene.add( edge_disp );
+                  //scene.add( edge_disp );
                 }
               }
             }
@@ -183,7 +183,7 @@ var clock = new THREE.Clock();
           
           
     };
-        document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function(event) {
     if(event.keyCode == 37) {
         camera_piv.rotateY(-0.05);
     }
@@ -201,6 +201,15 @@ var clock = new THREE.Clock();
         var y = camera.position.y/1.05;
         var z = camera.position.z/1.05;
         camera.position.set(x,y,z);
-    }
+    } else if(event.keyCode == 71) {
+        generateByPress(voxelstruct,lambmat);
+    } else if(event.keyCode == 87) {
+        camera_piv.position.y += 0.1;
+        camera.lookAt(camera_piv.position);
+    } else if(event.keyCode == 83) {
+        camera_piv.position.y -= 0.1;
+         camera.lookAt(camera_piv.position);
+    } 
+    
     });
 
