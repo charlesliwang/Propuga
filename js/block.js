@@ -365,22 +365,20 @@ class Island {
             return false;
         } else {
             this.visited.push(side);
-            if(this.contains(side.sym));
-            this.visited.push(side.sym);
+            if(this.contains(side.sym)) {
+                this.visited.push(side.sym);
+            }
         }
         var options = side.tempneighbors.slice(0);
         for(var i = 0; i < options.length; i++) {
             if(options[i] != null) {
                 if(this.traverseForPath(options[i])) {
-                    console.log(side);
+                    //console.log(side);
                     return true;
                 }
             }
         }
         if(this.visited.length == this.sides.length) {
-            console.log("visited.length: " + this.visited.length);
-            console.log("sides.length: " + this.visited.length);
-            console.log(side);
             return true;
         } else {
             this.popVisited(side);

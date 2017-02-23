@@ -271,16 +271,10 @@ class VoxelStruct {
     }
 
     connectTestFaces(bn,bx,by,bz,dir,adjacentToEdge,edge,sidea,sideb) {
-        console.log("TESTING AN EDGE");
-
 
         //console.log("connectTestFaces");
-        console.log(bn + " " + bx + " " + by + " " + bz +  " " + dir);
-        console.log(adjacentToEdge);
         var block_idx = edge.getFaceidx(bn,bx,by,bz);
         // console.log("TEST FACE");
-        console.log("idx: " + block_idx);
-        console.log("dir: " + dir);
         var u = (edge.n + 2)%3;
         var r = edge.n + 1;
         var loop = true;
@@ -329,13 +323,9 @@ class VoxelStruct {
                 }
                 } else {
                 if(adjblock.dir > 0) {
-                    console.log("lol");
-                    console.log(cw_side);
                     cw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(cw_side);
-                    console.log("hello");
-                    console.log(adjblock);
                     num = 4;
                 } else {
                     cw_side.addTempNeighbor(adjblock.sideb);
@@ -411,8 +401,6 @@ class VoxelStruct {
     }
 
     testGraphConnections(n,dir,x,y,z,edges) {
-        console.log("ugh");
-        console.log(edges);
         var sidea = new Side(null,1,100);
         var sideb = new Side(null,-1,100);
         sidea.sym = sideb;
@@ -436,6 +424,7 @@ class VoxelStruct {
         var vox = this.get(x,y,z);
         var block;
         if(vox.getBlock(i) == null) {
+            console.log("NULL??");
             block = vox.setBlock(i);
             this.blocks.push(block);
         }
@@ -453,6 +442,8 @@ class VoxelStruct {
         }
 
         var edges = this.testEdge(x,y,z,i);
+        console.log("EDGES DEBUG");
+        console.log(edges);
         this.testGraphConnections(i,dir,x,y,z,edges);
         return this.testGraphValidity();
     }
@@ -468,7 +459,11 @@ class VoxelStruct {
         graph.setIslandSize();
         console.log("GRAPH");
         console.log(graph);
+        if(graph.islands.length > 2) {
+            return false;
+        }
         var result = graph.islands[0].isValidHGraph(this.blocks[0].sidea);
+        console.log(result);
         return result;
     }
 
@@ -477,7 +472,6 @@ class VoxelStruct {
         var next_idx = -1;
         if(last_idx == -1) {
             if(curr_idx == -1) {
-                console.log(side);
                 next_idx = graph.addSidetoNewIsland(side);
                 for(var i = 0; i < side.tempneighbors.length; i++) {
                     if(side.tempneighbors[i] != null) {
@@ -489,7 +483,6 @@ class VoxelStruct {
             if(curr_idx == last_idx) {
 
             } else if (curr_idx == -1) {
-                console.log(side);
                 next_idx = graph.addSidetoIsland(side,last_idx);
                 for(var i = 0; i < side.tempneighbors.length; i++) {
                     if(side.tempneighbors[i] != null) {
@@ -503,6 +496,7 @@ class VoxelStruct {
     }
 
     testEdge(x,y,z,i) {
+        console.log("TEST EDGE " + i );
         var curr_vox = this.get(x,y,z);
         if (i == 0) {
             var y_edge;
@@ -520,9 +514,9 @@ class VoxelStruct {
                 z_edge2 = this.get(x,y+1,z).getEdge(2);
             }
             var all_edges = [y_edge2,z_edge,y_edge,z_edge2];
-            // console.log("testing edges");
-            // console.log(all_edges);
-            return(all_edges);
+            console.log("testing edges");
+            console.log(all_edges);
+            return all_edges ;
         } else if(i == 1) {
             var x_edge;
             var z_edge;
@@ -539,9 +533,9 @@ class VoxelStruct {
                 z_edge2 = this.get(x+1,y,z).edges[2];
             }
             var all_edges = [x_edge,z_edge2,x_edge2,z_edge];
-            // console.log("testing edges");
-            // console.log(all_edges);
-            return(all_edges);
+            console.log("testing edges");
+            console.log(all_edges);
+            return all_edges;
         } else if(i == 2) {
             var x_edge;
             var y_edge;
@@ -558,9 +552,9 @@ class VoxelStruct {
                 x_edge2 = this.get(x,y+1,z).edges[0];
             }
             var all_edges = [y_edge2, x_edge, y_edge, x_edge2];
-            // console.log("testing edges");
-            // console.log(all_edges);
-            return(all_edges);
+            console.log("testing edges");
+            console.log(all_edges);
+            return all_edges;
         }
         
         

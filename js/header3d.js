@@ -69,6 +69,7 @@ var clock = new THREE.Clock();
                           getElementById('fragShader').text
         });
   
+      lambmat = new THREE.MeshLambertMaterial();
 
       voxelstruct = new VoxelStruct(3);
       console.log("n: " + voxelstruct.getn());
@@ -82,7 +83,6 @@ var clock = new THREE.Clock();
 
 
       var meshes = voxelstruct.getAllBlocks();
-      lambmat = new THREE.MeshLambertMaterial();
       for(var i = 0; i < meshes.length; i++) {
             var block = meshes[i];
             if(block.id == 3) {
@@ -98,16 +98,19 @@ var clock = new THREE.Clock();
             mesh.material.side = THREE.DoubleSide;
             scene.add(mesh);
       }
+
+      startPuzzle(voxelstruct);
+
       var num = 0;
       for(var i = 0; i < voxelstruct.getlength(); i++) {
             if(voxelstruct.getidx(i) != null) {
               var vox = voxelstruct.getidx(i);
               var cube = vox.getCube();
-              // var cube = voxelstruct.getidx(i).getCube();
+              var cube = voxelstruct.getidx(i).getCube();
               var geo = new THREE.EdgesGeometry( cube ); // or WireframeGeometry( geometry )
               geo.translate(vox.getX()+0.5,vox.getY()+0.5,vox.getZ()+0.5);
               var wireframe = new THREE.LineSegments( geo, wire_mat );
-              //scene.add( wireframe );
+              scene.add( wireframe );
               for(var j = 0; j < 3; j++) {
                 if(vox.getEdge(j) != null) {
                   ++num;
