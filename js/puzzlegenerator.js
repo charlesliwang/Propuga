@@ -354,7 +354,7 @@ function generate(last, lastlast, voxelstruct, lambmat) {
         var new_n;
         var rand_idx = randomAvailable(options);
         while(!flag) {
-            if(rand_idx == 2) {
+            if(rand_idx == 0) {
                 new_x = x;
                 new_y = y + 1;
                 new_z = z - 1;
@@ -451,32 +451,52 @@ function generate(last, lastlast, voxelstruct, lambmat) {
     
 }
 
+function parsePuzzle(puzzle,voxelstruct) {
+    nums = puzzle.split(" ");
+    //console.log(nums);
+    for(var i = 0; i < nums.length; i = i+4) {
+    //console.log(i);
+        var x = parseInt(nums[i]);
+        var y = parseInt(nums[i+1]);
+        var z = parseInt(nums[i+2]);
+        var n = parseInt(nums[i+3]);
+    // console.log(x);
+    // console.log(y);
+    // console.log(z);
+    // console.log(n);
+        voxelstruct.createNewBlock(x,y,z,n);
+    }
+}
+
 function generateDebugPuzzle(voxelstruct) {
-      //last_voxel = voxelstruct.createNewBlock(0,0,0,1);
-      lastlast_voxel = voxelstruct.createNewBlock(0,0,0,1);
-      last_voxel = voxelstruct.createNewBlock(1,0,0,1);
-      //var result2 = voxelstruct.testNewBlock(0,2,0,0,1);
-      
-      //last_voxel = voxelstruct.createNewBlock(0,0,0,2);
-      //last_voxel = voxelstruct.createNewBlock(0,1,0,2);
-      
-      //voxelstruct.testNewBlock(0,1,0,2);
-      //voxelstruct.createNewBlock(0,2,0,1);
-    //voxelstruct.createNewBlock(0,1,1,2);
+    //   lastlast_voxel = voxelstruct.createNewBlock(0,0,0,1);
+    //   last_voxel = voxelstruct.createNewBlock(1,0,0,1);
+    //   voxelstruct.createNewBlock(1,-1,0,2);
+    //   voxelstruct.createNewBlock(1,-1,-1,1);
+    //   voxelstruct.createNewBlock(2,-1,-1,1);
+    //   lastlast_voxel = voxelstruct.createNewBlock(3,-1,-1,0);
+    //   lastlast_voxel = voxelstruct.createNewBlock(2,-1,-1,2);
+    //   last_voxel = voxelstruct.createNewBlock(1,-1,-1,2);
+    var puzzle = "0 0 0 1 1 0 0 1 1 -1 0 2 1 -1 -1 1 2 -1 -1 1 3 -1 -1 0 2 -1 -1 2 1 -1 -1 2";
+
+    puzzle = "0 0 0 1 1 0 0 1 1 -1 0 2 1 -1 -1 1 2 -1 -1 1 3 -1 -1 0 2 -1 -1 2 1 -1 -1 2 1 0 -2 1 1 -1 -2 2 1 -2 -2 2 1 -2 -2 0 1 -2 -1 0 0 -2 0 2 -1 -2 0 2 -1 -1 -1 1 0 -1 -1 0 0 -1 0 2 0 0 0 2 0 0 0 0 -1 0 0 1 -1 0 1 2";
+    parsePuzzle(puzzle, voxelstruct);
+    //voxelstruct.createNewBlock(0,0,1,0);
+
       var meshes = voxelstruct.getAllBlocks();
-      //var result = voxelstruct.testNewBlock(0,1,0,1,1);
-      //voxelstruct.createNewBlock(0,1,0,1);
-      //voxelstruct.createNewBlock(1,1,0,1);
+      lastlast_voxel = meshes[meshes.length-2];
+      last_voxel = meshes[meshes.length-1];
+      console.log(lastlast_voxel);
+      console.log(last_voxel);
+
+      voxelstruct.testNewBlock( 0,0,1,0,1);
       
-      for(var i = 0; i < meshes.length; i++) {
-          var mesh = meshes[i];
-          //console.log(mesh.id);
-          //console.log(mesh.sidea.neighbors);
-          //console.log(mesh.sidea.tempneighbors);
-      }
-      //voxelstruct.createNewBlock(0,1,0,1);
-      // voxelstruct.testSetBlock(-1,0,0,0);
-      // voxelstruct.testSetBlock(-1,1,0,2);
+      
+    //   for(var i = 0; i < meshes.length; i++) {
+    //       var mesh = meshes[i];
+
+    //   }
+
 }
 
 function generatePuzzle(n) {
@@ -506,6 +526,7 @@ function generatePuzzle(n) {
 function generateByPress(voxelstruct,lambmat) {
     console.log("FLAG");
     var return_voxel = generate(last_voxel, lastlast_voxel,voxelstruct,lambmat);
+    console.log(return_voxel);
     lastlast_voxel = last_voxel;
     console.log(lastlast_voxel.id);
     last_voxel = return_voxel;

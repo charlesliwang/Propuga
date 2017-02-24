@@ -246,9 +246,9 @@ class Edge {
                 }
             } else if (n == 1) {
                 if(x < this.x) {
-                    return 0;
+                    return 1;
                 } else {
-                    return 2;
+                    return 3;
                 }
             }
 
@@ -348,6 +348,7 @@ class Island {
 
     isValidHGraph(start_side) {
         this.visited = [];
+        if(!this.containsIds()) {return false};
         return this.traverseForPath(start_side);
     }
 
@@ -379,10 +380,31 @@ class Island {
             }
         }
         if(this.visited.length == this.sides.length) {
+            console.log(this.visited)
+            console.log("TRUE")
             return true;
         } else {
             this.popVisited(side);
         }
+        return false;
+    }
+
+    containsIds() {
+        var size = this.totalgraphsize;
+        for(var i = 0; i < size - 1; i++) {
+            if(!this.containsID(i)) {return false}
+        }
+        if(!this.containsID(100)) {return false;}
+        return true;
+    }
+
+    containsID(id) {
+        var size = this.sides.length;
+        for(var i = 0; i < size; i++) {
+            if(this.sides[i].id == id) {
+                return true;
+            }
+        } 
         return false;
     }
 }

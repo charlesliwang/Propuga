@@ -85,10 +85,6 @@ var clock = new THREE.Clock();
       var meshes = voxelstruct.getAllBlocks();
       for(var i = 0; i < meshes.length; i++) {
             var block = meshes[i];
-            if(block.id == 3) {
-              console.log("SIDES CHECK ");
-              console.log(block.sidea);
-            }
             var edges = block.getAllEdges();
             // for(var j = 0; j < edges.length; j++) {
             //   console.log(block.getEdge(j));
@@ -110,7 +106,7 @@ var clock = new THREE.Clock();
               var geo = new THREE.EdgesGeometry( cube ); // or WireframeGeometry( geometry )
               geo.translate(vox.getX()+0.5,vox.getY()+0.5,vox.getZ()+0.5);
               var wireframe = new THREE.LineSegments( geo, wire_mat );
-              scene.add( wireframe );
+              //scene.add( wireframe );
               for(var j = 0; j < 3; j++) {
                 if(vox.getEdge(j) != null) {
                   ++num;
@@ -119,7 +115,7 @@ var clock = new THREE.Clock();
                   //console.log(edge.getAllFaces());
                   var line = edge.getLine();   
                   var edge_disp = new THREE.LineSegments( line, edge_mat );
-                  //scene.add( edge_disp );
+                  scene.add( edge_disp );
                 }
               }
             }
@@ -212,6 +208,16 @@ var clock = new THREE.Clock();
     } else if(event.keyCode == 83) {
         camera_piv.position.y -= 0.1;
          camera.lookAt(camera_piv.position);
+    } else if(event.keyCode == 80) {
+        savePuzzle(voxelstruct);
+    } else if(event.keyCode == 49) {
+        stepToNextBlock(voxelstruct,0);
+    } else if(event.keyCode == 50) {
+        stepToNextBlock(voxelstruct,1);
+    } else if(event.keyCode == 51) {
+        stepToNextBlock(voxelstruct,2);
+    } else if(event.keyCode == 52) {
+        stepToNextBlock(voxelstruct,3);
     } 
     
     });

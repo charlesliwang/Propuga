@@ -131,7 +131,7 @@ class VoxelStruct {
             var z_edge2 = this.get(x+1,y,z).setEdge(2);
             var x_edge2 = this.get(x,y,z+1).setEdge(0);
             var block = curr_vox.getBlock(i);
-            var all_edges = [x_edge,z_edge2,x_edge2,z_edge];
+            var all_edges = [z_edge2,x_edge,z_edge,x_edge2];
             block.setAllEdges(all_edges);
             for(var j = 0; j < all_edges.length; j++) {
                 all_edges[j].setFace(block);
@@ -150,7 +150,7 @@ class VoxelStruct {
             var y_edge2 = this.get(x+1,y,z).setEdge(1);
             var x_edge2 = this.get(x,y+1,z).setEdge(0);
             var block = curr_vox.getBlock(i);
-            var all_edges = [y_edge2, x_edge, y_edge, x_edge2];
+            var all_edges = [x_edge2, y_edge, x_edge, y_edge2];
             block.setAllEdges(all_edges);
             for(var j = 0; j < all_edges.length; j++) {
                 all_edges[j].setFace(block);
@@ -271,8 +271,10 @@ class VoxelStruct {
     }
 
     connectTestFaces(bn,bx,by,bz,dir,adjacentToEdge,edge,sidea,sideb) {
-
-        //console.log("connectTestFaces");
+        
+        // console.log("connectTestFaces");
+        // console.log(edge);
+        // console.log(adjacentToEdge);
         var block_idx = edge.getFaceidx(bn,bx,by,bz);
         // console.log("TEST FACE");
         var u = (edge.n + 2)%3;
@@ -298,27 +300,31 @@ class VoxelStruct {
         } else {
             ccw_side = sidea;
         }
-        //console.log("block : " + block_idx);
+        //console.log(cw_side);
+        //console.log(ccw_side);
+        //console.log(block_idx);
         var ef = (block_idx-1);
         if(ef < 0) {
             ef = 3;
         }
+        console.log(ef);
         var num = 0;
         while (num < 4) {
             if(adjacentToEdge[ef] != null) {
-                console.log("ef : " + ef);
+                // console.log("ef : " + ef);
                 var adjblock = adjacentToEdge[ef];
-                console.log(adjblock);
                 if((ef == 0 || ef == 1)) {
                 if(adjblock.dir > 0) {
                     cw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(cw_side);
+                    //console.log(adjblock);
                     num = 4;
                 } else {
                     cw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(cw_side);
+                     //console.log(adjblock);
                     num = 4;
                 }
                 } else {
@@ -326,37 +332,42 @@ class VoxelStruct {
                     cw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(cw_side);
+                     //console.log(adjblock);
                     num = 4;
                 } else {
                     cw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(cw_side);
+                     //console.log(adjblock);
                     num = 4;
                 }
                 }
             }
+            console.log(num + " " + ef);
             num++;
             ef--;
             if(ef < 0) {
                 ef = 3;
             }
-            //console.log(ef);
         }
         num = 0;
         ef = (block_idx+1)%4;
         while (num < 4) {
             if(adjacentToEdge[ef] != null) {
+                //console.log("ef : " + ef);
                 var adjblock = adjacentToEdge[ef];
                 if((ef == 0 || ef == 1)) {
                 if(adjblock.dir > 0) {
                     ccw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(ccw_side);
+                     //console.log(adjblock);
                     num = 4;
                 } else {
                     ccw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(ccw_side);
+                     //console.log(adjblock);
                     num = 4;
                 }
                 } else {
@@ -364,11 +375,13 @@ class VoxelStruct {
                     ccw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(ccw_side);
+                     //console.log(adjblock);
                     num = 4;
                 } else {
                     ccw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(ccw_side);
+                     //console.log(adjblock);
                     num = 4;
                 }
                 }
@@ -414,6 +427,8 @@ class VoxelStruct {
                 }
             }
         }
+        console.log("DEBUG UGH");
+        console.log(sidea);
     }
 
     createNewBlock(x,y,z,i) {
