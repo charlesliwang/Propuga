@@ -60,12 +60,13 @@ class Voxel {
 }
 
 class VoxelStruct {
-    constructor(n) {
+    constructor(n, scene) {
         //set "n" to input
         this.n = n;
         //represent a 2n*2n*2n* array as a 1d array
         this.data = [];
         this.blocks = [];
+        this.scene = scene;
     }
     
     getn() {

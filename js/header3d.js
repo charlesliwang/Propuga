@@ -1,5 +1,6 @@
 
-var scene, camera, renderer;
+var scene, camera, renderer, canvas;
+var pickingTexture;
 var camera_piv;
 var container = document.getElementById( 'TitleHeader' );
 var objects = [];
@@ -17,11 +18,15 @@ var clock = new THREE.Clock();
     function init() {
       // Create the scene and set the scene size.
     scene = new THREE.Scene();
+    pickingTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight );
+	pickingTexture.texture.minFilter = THREE.LinearFilter;
     container = document.getElementById( 'TitleHeader' );
     var WIDTH = container.offsetWidth,
           HEIGHT = container.offsetHeight;
 
-    renderer = new THREE.WebGLRenderer({antialias:true});
+    canvas = document.createElement('canvas');
+
+    renderer = new THREE.WebGLRenderer({antialias:true, canvas:canvas});
     renderer.setSize(WIDTH, HEIGHT);
     container.appendChild( renderer.domElement );
 
@@ -71,7 +76,7 @@ var clock = new THREE.Clock();
   
       lambmat = new THREE.MeshLambertMaterial();
 
-      voxelstruct = new VoxelStruct(3);
+      voxelstruct = new VoxelStruct(3, scene);
       console.log("n: " + voxelstruct.getn());
 
       generateDebugPuzzle(voxelstruct);
@@ -182,6 +187,19 @@ var clock = new THREE.Clock();
           
           
     };
+    document.addEventListener('mousedown', function(event) {       
+        var x = event.clientX;
+        var y = event.clientY;
+        renderer.render( scene, camera, pickingTexture );
+        var pixelBuffer = new Uint8Array( 4 );
+        renderer.readRenderTargetPixels(pickingTexture, x, pickingTexture.height- y, 1, 1, pixelBuffer);
+        console.log(pixelBuffer);
+        var coor = "X coords: " + x + ", Y coords: " + y;
+        var color = new THREE.Color(pixelBuffer[0]/255,pixelBuffer[1]/255,pixelBuffer[2]/255);
+        console.log(color);
+        selectByColor(color, voxelstruct,lambmat);
+    });
+
     document.addEventListener('keydown', function(event) {
     if(event.keyCode == 37) {
         camera_piv.rotateY(-0.05);
@@ -211,14 +229,19 @@ var clock = new THREE.Clock();
     } else if(event.keyCode == 80) {
         savePuzzle(voxelstruct);
     } else if(event.keyCode == 49) {
-        stepToNextBlock(voxelstruct,0);
+        stepToNextBlock(voxelstruct,0,lambmat);
     } else if(event.keyCode == 50) {
-        stepToNextBlock(voxelstruct,1);
+        stepToNextBlock(voxelstruct,1,lambmat);
     } else if(event.keyCode == 51) {
-        stepToNextBlock(voxelstruct,2);
+        stepToNextBlock(voxelstruct,2,lambmat);
     } else if(event.keyCode == 52) {
-        stepToNextBlock(voxelstruct,3);
-    } 
+        stepToNextBlock(voxelstruct,3,lambmat);
+    } else if(event.keyCode == 53) {
+
+
+        
+
+    }
     
     });
 
