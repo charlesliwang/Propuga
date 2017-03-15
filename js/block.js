@@ -74,6 +74,13 @@ class Side {
         }
         }
     }
+
+    removeFromNeighbors(side) {
+        var idx = this.inNeighbors(side);
+        if(idx != -1) {
+            this.neighbors.splice(idx,1);
+        }
+    }
 }
 
 class Block {

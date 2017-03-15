@@ -30,7 +30,8 @@ function startPuzzle(voxelstructure) {
     last_side = voxelstructure.blocks[0].sidea;
     var face = last_side.block.mesh;
     face.material = currmat;
-    setNeighborColors();
+    setNeighborColors(voxelstructure);
+    voxelstructure.numBlocks = voxelstructure.blocks.length;
 }
 
 function stepToNextBlock(voxelstructure, d, lambmat) {
@@ -45,6 +46,7 @@ function stepToNextBlock(voxelstructure, d, lambmat) {
         if(adj[i] != null) {
             if(last_side.inNeighbors(adj[i].sidea) >= 0) {
                 delete_this = last_side.block.mesh;
+                voxelstructure.removeBlockUpdateGraph(last_side.block);
                 last_side = adj[i].sidea;
                 console.log(last_side);
                 var face = last_side.block.mesh;
@@ -55,6 +57,7 @@ function stepToNextBlock(voxelstructure, d, lambmat) {
             }
             if(last_side.inNeighbors(adj[i].sideb) >= 0) {
                 delete_this = last_side.block.mesh;
+                voxelstructure.removeBlockUpdateGraph(last_side.block);
                 last_side = adj[i].sideb;
                 console.log(last_side);
                 var face = last_side.block.mesh;
@@ -71,21 +74,26 @@ function stepToNextNeighbor(voxelstructure, d, lambmat) {
     resetNeighborColors(lambmat);
     console.log(last_side);
     var block = last_side.block;
+    voxelstructure.removeBlockUpdateGraph(block);
     delete_this = last_side.block.mesh;
     last_side = last_neighbors[d];
     console.log(last_side);
     var face = last_side.block.mesh;
     face.material = currmat;
     voxelstructure.scene.remove(delete_this);
-    setNeighborColors();
+    setNeighborColors(voxelstructure);
 
 }
 
-function setNeighborColors() {
+function setNeighborColors(voxelstructure) {
     last_neighbors = last_side.neighbors;
-    console.log(last_neighbors.length);
+    //console.log(last_neighbors.length);
     if(last_neighbors.length == 0) {
-        console.log("YOU LOSE");
+        if(voxelstructure.numBlocks != 1) {
+            console.log("YOU LOSE");
+        } else {
+            console.log("YOU WIN");
+        }
     }
     for(var i = 0; i < last_neighbors.length; i++) {
         last_neighbors[i].block.mesh.material = next_mats[i];

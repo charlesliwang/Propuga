@@ -67,6 +67,7 @@ class VoxelStruct {
         this.data = [];
         this.blocks = [];
         this.scene = scene;
+        this.numBlocks = 0;
     }
     
     getn() {
@@ -575,4 +576,50 @@ class VoxelStruct {
         
         
     }
+
+    removeBlockUpdateGraph(block) {
+        var edges = block.getAllEdges();
+        //console.log(edges);
+        var sidea = block.sidea;
+        var sideb = block.sideb;
+        console.log(sidea);
+        console.log(sideb);
+        for(var i = 0; i < edges.length; i++) {
+            if(edges[i] != null) {
+                var curr_edge = edges[i];
+                var n1 = this.getNeighborOnEdge(block.sidea, curr_edge, block); 
+                console.log(n1);
+                var n2 = this.getNeighborOnEdge(block.sideb, curr_edge, block); 
+                console.log(n2);
+                if(n1 != null && n2 != null && n1.id != n2.id) {
+                    n1.addNeighbor(n2);
+                    n2.addNeighbor(n1);
+                }
+            }
+        }
+        this.numBlocks--; 
+        console.log("# Blocks remaining: " + this.numBlocks );
+
+    }
+
+    getNeighborOnEdge(side, edge, block) {
+        var adj = edge.getAdjacent(block.id);
+        for(var i = 0; i < adj.length; i++) {
+            if(adj[i] == null) {
+                continue;
+            }
+            if(side.inNeighbors(adj[i].sidea) != -1) {
+                adj[i].sidea.removeFromNeighbors(side);
+                return adj[i].sidea;
+            }
+            if(side.inNeighbors(adj[i].sideb) != -1) {
+                adj[i].sideb.removeFromNeighbors(side);
+                return adj[i].sideb;
+            }
+            
+        }
+    }
+
+    
+
 }
