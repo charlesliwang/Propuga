@@ -44,10 +44,10 @@ class Side {
             if(faces[i] != null) {
                 var a = this.inNeighbors(faces[i].sidea)
                 if(a != -1) {
-                    console.log(this.neighbors);
-                    console.log(a);
+                    //console.log(this.neighbors);
+                    //console.log(a);
                     this.neighbors.splice(a,1);
-                    console.log(this.neighbors);
+                    //console.log(this.neighbors);
                 }
                 var b = this.inNeighbors(faces[i].sideb);
                 if(b != -1) {
@@ -62,10 +62,10 @@ class Side {
             if(faces[i] != null) {
                 var a = this.inTempNeighbors(faces[i].sidea)
                 if(a != -1) {
-                    console.log(this.tempneighbors);
-                    console.log(a);
+                    //console.log(this.tempneighbors);
+                    //console.log(a);
                     this.tempneighbors.splice(a,1);
-                    console.log(this.tempneighbors);
+                    //console.log(this.tempneighbors);
                 }
                 var b = this.inTempNeighbors(faces[i].sideb);
                 if(b != -1) {
@@ -139,7 +139,7 @@ class Block {
 
   setEdge(edge) {
       this.edges.push(edge);
-      console.log(this.edges);
+      //console.log(this.edges);
   }
 
   getAllEdges() {
@@ -314,7 +314,7 @@ class Graph {
         for(var i = 0; i < this.islands.length; i++) {
             this.islands[i].totalgraphsize = sum;
         }
-        console.log("sum: " + sum);
+        //console.log("sum: " + sum);
 
     }
     
@@ -381,14 +381,14 @@ class Island {
         for(var i = 0; i < options.length; i++) {
             if(options[i] != null) {
                 if(this.traverseForPath(options[i])) {
-                    //console.log(side);
+                    ////console.log(side);
                     return true;
                 }
             }
         }
         if(this.visited.length == this.sides.length) {
-            console.log(this.visited)
-            console.log("TRUE")
+            // //console.log(this.visited)
+            // //console.log("TRUE")
             return true;
         } else {
             this.popVisited(side);

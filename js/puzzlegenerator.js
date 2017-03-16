@@ -11,22 +11,22 @@ function randomAvailable(options) {
     if(available_options.length == 0){
         return -1;
     }
-    console.log(options);
-    console.log(available_options);
+    // //console.log(options);
+    // //console.log(available_options);
     var idx = Math.floor(Math.random() * available_options.length);
     return available_options[idx];
 }
 
 function generate(last, lastlast, voxelstruct, lambmat) {
-    console.log("GENERATING");
-    console.log(lastlast_voxel);
-    console.log(last_voxel);
+    //console.log("GENERATING");
+    //console.log(lastlast_voxel);
+    //console.log(last_voxel);
     var return_voxel;
     var options = [true,true,true,true,true,true,true,true,true,true,true,true];
     var x = last.x;
     var y = last.y;
     var z = last.z;
-    console.log("FLAG");
+    //console.log("FLAG");
     if(last.n == 0) {
         if(lastlast.n == 0) {
             if(lastlast.y > last.y) {
@@ -152,20 +152,20 @@ function generate(last, lastlast, voxelstruct, lambmat) {
                 var rand_idx = randomAvailable(options);
             }
             if(rand_idx == -1) {
-                console.log("BREAK");
+                //console.log("BREAK");
                 break;
             }
         }
         if(flag) {
-            console.log("FLAG2 X");
-            console.log("new x: " + new_x);
-            console.log("new y: " + new_y);
-            console.log("new z: " + new_z);
-            console.log("new n: " + new_n);
-            console.log(new_x);
-            console.log(new_y);
-            console.log(new_z);
-            console.log(new_n);
+            // //console.log("FLAG2 X");
+            // //console.log("new x: " + new_x);
+            // //console.log("new y: " + new_y);
+            // //console.log("new z: " + new_z);
+            // //console.log("new n: " + new_n);
+            // //console.log(new_x);
+            // //console.log(new_y);
+            // //console.log(new_z);
+            // //console.log(new_n);
             return_voxel = voxelstruct.createNewBlock(new_x,new_y,new_z,new_n);
             mesh = return_voxel.mesh;
             mesh.material = lambmat;
@@ -298,16 +298,16 @@ function generate(last, lastlast, voxelstruct, lambmat) {
                 var rand_idx = randomAvailable(options);
             }
             if(rand_idx == -1) {
-                console.log("BREAK");
+                //console.log("BREAK");
                 break;
             }
         }
         if(flag) {
-            console.log("FLAG2 Y");
-            console.log("new x: " + new_x);
-            console.log("new y: " + new_y);
-            console.log("new z: " + new_z);
-            console.log("new n: " + new_n);
+            // //console.log("FLAG2 Y");
+            // //console.log("new x: " + new_x);
+            // //console.log("new y: " + new_y);
+            // //console.log("new z: " + new_z);
+            // //console.log("new n: " + new_n);
             return_voxel = voxelstruct.createNewBlock(new_x,new_y,new_z,new_n);
             mesh = return_voxel.mesh;
             mesh.material = lambmat;
@@ -440,16 +440,16 @@ function generate(last, lastlast, voxelstruct, lambmat) {
                 var rand_idx = randomAvailable(options);
             }
             if(rand_idx == -1) {
-                console.log("BREAK");
+                //console.log("BREAK");
                 break;
             }
         }
         if(flag) {
-            console.log("FLAG2 Z");
-            console.log("new x: " + new_x);
-            console.log("new y: " + new_y);
-            console.log("new z: " + new_z);
-            console.log("new n: " + new_n);
+            // //console.log("FLAG2 Z");
+            // //console.log("new x: " + new_x);
+            // //console.log("new y: " + new_y);
+            // //console.log("new z: " + new_z);
+            // //console.log("new n: " + new_n);
             return_voxel = voxelstruct.createNewBlock(new_x,new_y,new_z,new_n);
             mesh = return_voxel.mesh;
             mesh.material = lambmat;
@@ -464,17 +464,17 @@ function generate(last, lastlast, voxelstruct, lambmat) {
 
 function parsePuzzle(puzzle,voxelstruct) {
     nums = puzzle.split(" ");
-    //console.log(nums);
+    ////console.log(nums);
     for(var i = 0; i < nums.length; i = i+4) {
-    //console.log(i);
+    ////console.log(i);
         var x = parseInt(nums[i]);
         var y = parseInt(nums[i+1]);
         var z = parseInt(nums[i+2]);
         var n = parseInt(nums[i+3]);
-    // console.log(x);
-    // console.log(y);
-    // console.log(z);
-    // console.log(n);
+    // //console.log(x);
+    // //console.log(y);
+    // //console.log(z);
+    // //console.log(n);
         var return_block = voxelstruct.createNewBlock(x,y,z,n);
         lastlast_voxel = last_voxel;
         last_voxel = return_block;
@@ -494,6 +494,9 @@ function generateDebugPuzzle(voxelstruct) {
 
     puzzle = "0 0 0 1 1 0 0 1 1 -1 0 2 1 -1 -1 1 2 -1 -1 1 3 -1 -1 0 2 -1 -1 2 1 -1 -1 2 1 0 -2 1 1 -1 -2 2 1 -2 -2 2 1 -2 -2 0 1 -2 -1 0 0 -2 0 2 -1 -2 0 2 -1 -1 -1 1 0 -1 -1 0 0 -1 0 2 0 0 0 2 0 0 0 0 -1 0 0 1 -1 0 1 2";
     puzzle = "0 0 0 1 1 0 0 1 2 0 0 0 2 0 0 2 2 0 0 1 3 0 0 0 2 0 1 2 2 1 1 1 3 0 1 0 3 -1 1 0 3 -2 1 0 3 -2 2 2 3 -2 1 1 2 -2 1 1 1 -2 1 1 1 -2 1 0 0 -2 2 2 0 -2 1 1 0 -2 1 2 0 -1 1 2";
+    puzzle = "0 0 0 1 1 0 0 1 2 -1 0 0 2 -1 0 2 2 0 0 2 1 0 0 2 1 1 0 2 1 2 -1 1 0 2 -1 1 0 1 -1 2 1 1 -1 0 1 0 -1 0 1 -1 -1 0 1 -2 -1 0 1 -2 0 2 1 -2 0 1 0 -2 0 1 -1 -2 0 1 -1 -2 -1 1 -1 -2 -1 2";
+    puzzle = "0 0 0 1 1 0 0 1 1 0 0 2 2 0 0 2 3 0 0 2 3 1 0 1 3 0 0 0 2 0 0 1 2 0 1 2 2 0 0 0 2 1 0 1 2 1 0 0 1 2 0 1 1 1 0 2 0 1 0 2 -1 1 0 2 -1 1 0 0 -1 1 1 2 -1 1 0 1 -2 1 0 1";
+    puzzle = "0 0 0 1 1 0 0 1 1 0 0 2 0 0 0 2 0 1 -1 1 0 1 -1 2 0 1 -2 0 0 0 -2 0 0 0 -1 0 0 0 0 0 -1 0 1 2 -1 1 1 1 -1 1 1 0 -1 1 0 0 -1 1 -1 0 -1 2 -1 0 -2 3 -1 1 -2 2 -1 0 -2 2 -1 2 -2 3 -2 1";
     //puzzle = "0 0 0 1 1 0 0 1 1 -1 0 2 1 -1 -1 1 2 -1 -1 1 3 -1 -1 0 2 -1 -1 2 1 -1 -1 2 1 0 -2 1 1 -1 -2 2 1 -2 -2 2 1 -2 -2 0 1 -2 -1 0 0 -2 0 2 -1 -2 0 2 -1 -1 -1 1 0 -1 -1 0 0 -1 0 2 0 0 0 2 0 0 0 0 -1 0 0 1 -1 0 1 2 -2 0 1 2 -2 0 0 0 -2 -1 0 0 -2 -1 0 1 -2 -1 1 1 -2 -1 2 1 -2 -2 2 0 -2 -2 1 0 -2 -2 0 0 -3 -2 0 2 -3 -1 0 2"
     parsePuzzle(puzzle, voxelstruct);
     //voxelstruct.createNewBlock(0,0,1,0);
@@ -501,12 +504,12 @@ function generateDebugPuzzle(voxelstruct) {
       var meshes = voxelstruct.getAllBlocks();
     //   lastlast_voxel = meshes[meshes.length-2];
     //   last_voxel = meshes[meshes.length-1];
-    // console.log(lastlast_voxel);
-    // console.log(last_voxel);
+    // //console.log(lastlast_voxel);
+    // //console.log(last_voxel);
 
       //voxelstruct.testNewBlock( 0,0,1,0,1);
     //var test = voxelstruct.createNewBlock( -3,0,0,1);
-    //   console.log(test);
+    //   //console.log(test);
 
     //voxelstruct.testNewBlock( -3,0,0,1,1);
       
@@ -528,14 +531,14 @@ function generatePuzzle(voxelstruct, n, lambmat) {
 
 
 function generateByPress(voxelstruct,lambmat) {
-    console.log("FLAG");
+    //console.log("FLAG");
     var return_voxel = generate(last_voxel, lastlast_voxel,voxelstruct,lambmat);
-    console.log(return_voxel);
+    //console.log(return_voxel);
     lastlast_voxel = last_voxel;
-    console.log(lastlast_voxel.id);
+    //console.log(lastlast_voxel.id);
     last_voxel = return_voxel;
-    console.log(last_voxel.id);
-    console.log("FLAG");
-    console.log(voxelstruct);
+    //console.log(last_voxel.id);
+    //console.log("FLAG");
+    //console.log(voxelstruct);
 }
 

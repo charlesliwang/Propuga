@@ -42,7 +42,7 @@ var clock = new THREE.Clock();
         
     // Create a camera, zoom it out from the model a bit, and add it to the scene.
     camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 20000);
-    camera.position.set(0,0,5);
+    camera.position.set(0,0,10);
     camera_y = new THREE.Object3D();
     camera_y.position.set(0,0,0);
     camera_piv = new THREE.Object3D();
@@ -59,7 +59,7 @@ var clock = new THREE.Clock();
 
 
     camera_piv.rotateX(-0.2);
-    camera_y.position.set(0,0,5);
+    camera_y.position.set(0,0,0);
     camera.lookAt(camera_y.position);
 
 
@@ -101,8 +101,8 @@ var clock = new THREE.Clock();
       voxelstruct = new VoxelStruct(10, scene);
       console.log("n: " + voxelstruct.getn());
 
-      generateDebugPuzzle(voxelstruct);
-      //generatePuzzle(voxelstruct, 20,lambmat);
+      //generateDebugPuzzle(voxelstruct);
+      generatePuzzle(voxelstruct, 20,lambmat);
 
       var wire_mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
       var edge_mat = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 10 } );
@@ -213,7 +213,39 @@ var clock = new THREE.Clock();
           
     };
 
-    document.addEventListener('mousedown', function(event) {       
+    moveCamera = false;
+    rotCamera = false;
+    zoomCamera = false;
+    x_pos = 0;
+    y_pos = 0;
+    dx = 0;
+    dy = 0;
+    document.addEventListener('mousedown', function(event) {   
+        var ctrlKeyPressed = event.altKey;
+        var shiftKeyPressed = event.shiftKey;
+        if(ctrlKeyPressed) {
+            if(!shiftKeyPressed) {
+            rotCamera = true;
+            x_pos = event.clientX;
+            y_pos = event.clientY;
+            dx = 0;
+            dy = 0;
+        } else {
+            zoomCamera = true;
+            x_pos = event.clientX;
+            y_pos = event.clientY;
+            dx = 0;
+            dy = 0;
+        }
+        } else if(shiftKeyPressed) {
+            moveCamera = true;
+            x_pos = event.clientX;
+            y_pos = event.clientY;
+            dx = 0;
+            dy = 0;
+        }
+        
+        else {
         var x = event.clientX;
         var y = event.clientY;
         renderer.render( scene, camera, pickingTexture );
@@ -222,6 +254,56 @@ var clock = new THREE.Clock();
         var coor = "X coords: " + x + ", Y coords: " + y;
         var color = new THREE.Color(pixelBuffer[0]/255,pixelBuffer[1]/255,pixelBuffer[2]/255);
         selectByColor(color, voxelstruct,lambmat);
+        }
+    });
+
+    document.addEventListener('mouseup', function(event) {   
+        moveCamera = false;
+        rotCamera = false;
+        zoomCamera = false;
+    });
+
+    document.addEventListener('mousemove', function(event) {  
+        if(!event.altKey) {
+            rotCamera = false;
+            zoomCamera = false;
+        } else if(!event.shiftKey) {
+            moveCamera = false;
+            zoomCamera = false;
+        }
+        if(moveCamera) {
+            var new_dx = event.clientX - x_pos;
+            var new_dy = event.clientY - y_pos;
+            var a = new THREE.Vector4( 1, 0, 0 ,0);
+            a.normalize();
+            camera_y.translateOnAxis ( new THREE.Vector3(a.x,a.y,a.z), -0.01*(new_dx - dx) );
+            var a2 = new THREE.Vector4( 0, 1, 0 ,0);
+            a2.normalize();
+            camera_y.translateOnAxis ( new THREE.Vector3(a2.x,a2.y,a2.z), 0.01*(new_dy - dy) );
+            dx = new_dx;
+            dy = new_dy;
+        }
+        if(rotCamera) {
+            var new_dx = event.clientX - x_pos;
+            var new_dy = event.clientY - y_pos;
+            camera_y.rotateY(-0.01*(new_dx - dx));
+            camera_piv.rotateX(-0.01*(new_dy - dy));
+            dx = new_dx;
+            dy = new_dy;
+        }
+        if(zoomCamera) {
+            var new_dx = event.clientX - x_pos;
+            var new_dy = event.clientY - y_pos;
+            var a = new THREE.Vector4( 0, 0, 1 ,0);
+            a.normalize();
+            camera.translateOnAxis ( new THREE.Vector3(a.x,a.y,a.z), -0.01*(new_dx - dx) );
+            if(camera.position.z < 0) {
+                camera.position.set(0,0,0);
+            }
+            dx = new_dx;
+            dy = new_dy;
+        }
+        
     });
 
 

@@ -19,7 +19,7 @@ class Voxel {
     }
     setBlock(i) {
         var block = new Block(this.x,this.y,this.z, i, 1);
-        //console.log("test pos: " + block.getPos(0) + " " + block.getPos(1) + " " + block.getPos(2));
+        ////console.log("test pos: " + block.getPos(0) + " " + block.getPos(1) + " " + block.getPos(2));
         this.blocks[i] = block;
         return block;
     }
@@ -162,12 +162,12 @@ class VoxelStruct {
 
     connectFaces(block,adjacentToEdge,edge) {
         var block_idx = edge.getFaceidx(block.n,block.x,block.y,block.z);
-        // console.log("idx: " + block_idx);
-        // console.log("dir: " + block.dir);
+        // //console.log("idx: " + block_idx);
+        // //console.log("dir: " + block.dir);
         var u = (edge.n + 2)%3;
         var r = edge.n + 1;
-        // console.log("mod: ");
-        // console.log(edge.n + " " + u);
+        // //console.log("mod: ");
+        // //console.log(edge.n + " " + u);
         var loop = true;
         var cw_side;
         if((block_idx == 0 || block_idx == 1)) {
@@ -189,12 +189,12 @@ class VoxelStruct {
         } else {
             ccw_side = block.sidea;
         }
-        //console.log("block : " + block_idx);
+        //////console.log("block : " + block_idx);
         var ef = (block_idx-1);
         if(ef < 0) {
             ef = 3;
         }
-        //console.log("ef : " + ef);
+        //////console.log("ef : " + ef);
         var num = 0;
         while (num < 4) {
             if(adjacentToEdge[ef] != null) {
@@ -225,13 +225,13 @@ class VoxelStruct {
                 }
                 }
             }
-            //console.log("num " + num);
+            //////console.log("num " + num);
             num++;
             ef--;
             if(ef < 0) {
                 ef = 3;
             }
-            //console.log(ef);
+            //////console.log(ef);
         }
         num = 0;
         ef = (block_idx+1)%4;
@@ -267,22 +267,22 @@ class VoxelStruct {
             num++;
             ef++;
             ef = ef%4;
-            //console.log(ef);
+            //////console.log(ef);
         } 
 
     }
 
     connectTestFaces(bn,bx,by,bz,dir,adjacentToEdge,edge,sidea,sideb) {
         
-        // console.log("connectTestFaces");
-        // console.log(edge);
-        // console.log(adjacentToEdge);
+        // //console.log("connectTestFaces");
+        // //console.log(edge);
+        // //console.log(adjacentToEdge);
         var block_idx = edge.getFaceidx(bn,bx,by,bz);
-        console.log("original idx: " + block_idx);
-        console.log(edge);
-        console.log(adjacentToEdge);
+        //console.log("original idx: " + block_idx);
+        //console.log(edge);
+        //console.log(adjacentToEdge);
         
-        // console.log("TEST FACE");
+        // //console.log("TEST FACE");
         var u = (edge.n + 2)%3;
         var r = edge.n + 1;
         var loop = true;
@@ -306,59 +306,51 @@ class VoxelStruct {
         } else {
             ccw_side = sidea;
         }
-        console.log("edge");
-        console.log(edge.n);
-        console.log("cw_side");
-        console.log(cw_side);
-        console.log("ccw_side");
-        console.log(ccw_side);
+        // //console.log("edge");
+        // //console.log(edge.n);
+        // //console.log("cw_side");
+        // //console.log(cw_side);
+        // //console.log("ccw_side");
+        // //console.log(ccw_side);
         var ef = (block_idx-1);
         if(ef < 0) {
             ef = 3;
         }
-        console.log(ef);
+        //console.log(ef);
         var num = 0;
         while (num < 4) {
             if(adjacentToEdge[ef] != null) {
-                // console.log("ef : " + ef);
                 var adjblock = adjacentToEdge[ef];
                 if((ef == 0 || ef == 1)) {
                 if(adjblock.dir > 0) {
-                    console.log("new cw connection");
-                    console.log(ef);
-                    console.log(adjblock);
                     cw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(cw_side);
-                    //console.log(adjblock);
+                    ////console.log(adjblock);
                     num = 4;
                 } else {
                     cw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(cw_side);
-                     //console.log(adjblock);
+                     ////console.log(adjblock);
                     num = 4;
                 }
                 } else {
                 if(adjblock.dir > 0) {
-                    console.log("new cw connection");
-                    console.log(ef);
-                    console.log(adjblock);
                     cw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(cw_side);
-                     //console.log(adjblock);
+                     ////console.log(adjblock);
                     num = 4;
                 } else {
                     cw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(cw_side);
-                     //console.log(adjblock);
+                     ////console.log(adjblock);
                     num = 4;
                 }
                 }
             }
-            console.log(num + " " + ef);
             num++;
             ef--;
             if(ef < 0) {
@@ -369,20 +361,20 @@ class VoxelStruct {
         ef = (block_idx+1)%4;
         while (num < 4) {
             if(adjacentToEdge[ef] != null) {
-                //console.log("ef : " + ef);
+                ////console.log("ef : " + ef);
                 var adjblock = adjacentToEdge[ef];
                 if((ef == 0 || ef == 1)) {
                 if(adjblock.dir > 0) {
                     ccw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(ccw_side);
-                     //console.log(adjblock);
+                     ////console.log(adjblock);
                     num = 4;
                 } else {
                     ccw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(ccw_side);
-                     //console.log(adjblock);
+                     ////console.log(adjblock);
                     num = 4;
                 }
                 } else {
@@ -390,13 +382,13 @@ class VoxelStruct {
                     ccw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(ccw_side);
-                     //console.log(adjblock);
+                     ////console.log(adjblock);
                     num = 4;
                 } else {
                     ccw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(ccw_side);
-                     //console.log(adjblock);
+                     ////console.log(adjblock);
                     num = 4;
                 }
                 }
@@ -404,11 +396,11 @@ class VoxelStruct {
             num++;
             ef++;
             ef = ef%4;
-            //console.log(ef);
+            ////console.log(ef);
         } 
-        console.log("TEST NEW NEIGHBORS");
-        console.log(sidea);
-        console.log(sideb);
+        // //console.log("TEST NEW NEIGHBORS");
+        // //console.log(sidea);
+        // //console.log(sideb);
 
 
     }
@@ -418,7 +410,7 @@ class VoxelStruct {
         var adjfaces = [];
         var edges = block.edges;
         // if(i == 2) {
-        //     console.log(edges);
+        //     //console.log(edges);
         // }
         for (var j = 0; j < edges.length; j++) {
             if(edges[j] != null) {
@@ -446,8 +438,8 @@ class VoxelStruct {
                 }
             }
         }
-        console.log("DEBUG UGH");
-        console.log(sidea);
+        //console.log("DEBUG UGH");
+        //console.log(sidea);
     }
 
     createNewBlock(x,y,z,i) {
@@ -458,7 +450,7 @@ class VoxelStruct {
         var vox = this.get(x,y,z);
         var block;
         if(vox.getBlock(i) == null) {
-            console.log("NULL??");
+            //console.log("NULL??");
             block = vox.setBlock(i);
             this.blocks.push(block);
         }
@@ -476,28 +468,28 @@ class VoxelStruct {
         }
 
         var edges = this.testEdge(x,y,z,i);
-        console.log("EDGES DEBUG");
-        console.log(edges);
+        //console.log("EDGES DEBUG");
+        //console.log(edges);
         this.testGraphConnections(i,dir,x,y,z,edges);
         return this.testGraphValidity();
     }
 
     testGraphValidity() {
-        console.log("test graph validity");
+        //console.log("test graph validity");
         var graph = new Graph();
         for(var i = 0; i < this.blocks.length; i++) {
-            //console.log(this.blocks[i]);
+            ////console.log(this.blocks[i]);
             this.addSideToGraph(graph, this.blocks[i].sidea, -1)
             this.addSideToGraph(graph, this.blocks[i].sideb, -1)
         }
         graph.setIslandSize();
-        console.log("GRAPH");
-        console.log(graph);
+        // //console.log("GRAPH");
+        // //console.log(graph);
         if(graph.islands.length > 2) {
             return false;
         }
         var result = graph.islands[0].isValidHGraph(this.blocks[0].sidea);
-        console.log(result);
+        //console.log(result);
         return result;
     }
 
@@ -530,10 +522,10 @@ class VoxelStruct {
     }
 
     testEdge(x,y,z,i) {
-        console.log("TEST EDGE " + i );
-        console.log("x: " + x + ", y: " + y + ", z: " + z); 
+        //console.log("TEST EDGE " + i );
+        //console.log("x: " + x + ", y: " + y + ", z: " + z); 
         var curr_vox = this.get(x,y,z);
-        console.log(curr_vox);
+        //console.log(curr_vox);
         if (i == 0) {
             var y_edge;
             var z_edge;
@@ -550,8 +542,8 @@ class VoxelStruct {
                 z_edge2 = this.get(x,y+1,z).getEdge(2);
             }
             var all_edges = [y_edge2,z_edge,y_edge,z_edge2];
-            console.log("testing edges");
-            console.log(all_edges);
+            // //console.log("testing edges");
+            // //console.log(all_edges);
             return all_edges ;
         } else if(i == 1) {
             var x_edge;
@@ -569,8 +561,8 @@ class VoxelStruct {
                 z_edge2 = this.get(x+1,y,z).edges[2];
             }
             var all_edges = [x_edge,z_edge2,x_edge2,z_edge];
-            console.log("testing edges");
-            console.log(all_edges);
+            // //console.log("testing edges");
+            // //console.log(all_edges);
             return all_edges;
         } else if(i == 2) {
             var x_edge;
@@ -588,8 +580,8 @@ class VoxelStruct {
                 x_edge2 = this.get(x,y+1,z).edges[0];
             }
             var all_edges = [y_edge2, x_edge, y_edge, x_edge2];
-            console.log("testing edges");
-            console.log(all_edges);
+            // //console.log("testing edges");
+            // //console.log(all_edges);
             return all_edges;
         }
         
@@ -598,7 +590,7 @@ class VoxelStruct {
 
     removeBlockUpdateGraph(block) {
         var edges = block.getAllEdges();
-        //console.log(edges);
+        ////console.log(edges);
         var sidea = block.sidea;
         var sideb = block.sideb;
         for(var i = 0; i < edges.length; i++) {
@@ -613,7 +605,7 @@ class VoxelStruct {
             }
         }
         this.numBlocks--; 
-        console.log("# Blocks remaining: " + this.numBlocks );
+        //console.log("# Blocks remaining: " + this.numBlocks );
 
     }
 
