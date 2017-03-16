@@ -18,6 +18,9 @@ function randomAvailable(options) {
 }
 
 function generate(last, lastlast, voxelstruct, lambmat) {
+    console.log("GENERATING");
+    console.log(lastlast_voxel);
+    console.log(last_voxel);
     var return_voxel;
     var options = [true,true,true,true,true,true,true,true,true,true,true,true];
     var x = last.x;
@@ -154,7 +157,11 @@ function generate(last, lastlast, voxelstruct, lambmat) {
             }
         }
         if(flag) {
-            console.log("FLAG2");
+            console.log("FLAG2 X");
+            console.log("new x: " + new_x);
+            console.log("new y: " + new_y);
+            console.log("new z: " + new_z);
+            console.log("new n: " + new_n);
             console.log(new_x);
             console.log(new_y);
             console.log(new_z);
@@ -296,7 +303,11 @@ function generate(last, lastlast, voxelstruct, lambmat) {
             }
         }
         if(flag) {
-            console.log("FLAG2");
+            console.log("FLAG2 Y");
+            console.log("new x: " + new_x);
+            console.log("new y: " + new_y);
+            console.log("new z: " + new_z);
+            console.log("new n: " + new_n);
             return_voxel = voxelstruct.createNewBlock(new_x,new_y,new_z,new_n);
             mesh = return_voxel.mesh;
             mesh.material = lambmat;
@@ -434,11 +445,11 @@ function generate(last, lastlast, voxelstruct, lambmat) {
             }
         }
         if(flag) {
-            console.log("FLAG2");
-            console.log(new_x);
-            console.log(new_y);
-            console.log(new_z);
-            console.log(new_n);
+            console.log("FLAG2 Z");
+            console.log("new x: " + new_x);
+            console.log("new y: " + new_y);
+            console.log("new z: " + new_z);
+            console.log("new n: " + new_n);
             return_voxel = voxelstruct.createNewBlock(new_x,new_y,new_z,new_n);
             mesh = return_voxel.mesh;
             mesh.material = lambmat;
@@ -464,7 +475,9 @@ function parsePuzzle(puzzle,voxelstruct) {
     // console.log(y);
     // console.log(z);
     // console.log(n);
-        voxelstruct.createNewBlock(x,y,z,n);
+        var return_block = voxelstruct.createNewBlock(x,y,z,n);
+        lastlast_voxel = last_voxel;
+        last_voxel = return_block;
     }
 }
 
@@ -480,16 +493,22 @@ function generateDebugPuzzle(voxelstruct) {
     var puzzle = "0 0 0 1 1 0 0 1 1 -1 0 2 1 -1 -1 1 2 -1 -1 1 3 -1 -1 0 2 -1 -1 2 1 -1 -1 2";
 
     puzzle = "0 0 0 1 1 0 0 1 1 -1 0 2 1 -1 -1 1 2 -1 -1 1 3 -1 -1 0 2 -1 -1 2 1 -1 -1 2 1 0 -2 1 1 -1 -2 2 1 -2 -2 2 1 -2 -2 0 1 -2 -1 0 0 -2 0 2 -1 -2 0 2 -1 -1 -1 1 0 -1 -1 0 0 -1 0 2 0 0 0 2 0 0 0 0 -1 0 0 1 -1 0 1 2";
+    puzzle = "0 0 0 1 1 0 0 1 2 0 0 0 2 0 0 2 2 0 0 1 3 0 0 0 2 0 1 2 2 1 1 1 3 0 1 0 3 -1 1 0 3 -2 1 0 3 -2 2 2 3 -2 1 1 2 -2 1 1 1 -2 1 1 1 -2 1 0 0 -2 2 2 0 -2 1 1 0 -2 1 2 0 -1 1 2";
+    //puzzle = "0 0 0 1 1 0 0 1 1 -1 0 2 1 -1 -1 1 2 -1 -1 1 3 -1 -1 0 2 -1 -1 2 1 -1 -1 2 1 0 -2 1 1 -1 -2 2 1 -2 -2 2 1 -2 -2 0 1 -2 -1 0 0 -2 0 2 -1 -2 0 2 -1 -1 -1 1 0 -1 -1 0 0 -1 0 2 0 0 0 2 0 0 0 0 -1 0 0 1 -1 0 1 2 -2 0 1 2 -2 0 0 0 -2 -1 0 0 -2 -1 0 1 -2 -1 1 1 -2 -1 2 1 -2 -2 2 0 -2 -2 1 0 -2 -2 0 0 -3 -2 0 2 -3 -1 0 2"
     parsePuzzle(puzzle, voxelstruct);
     //voxelstruct.createNewBlock(0,0,1,0);
 
       var meshes = voxelstruct.getAllBlocks();
-      lastlast_voxel = meshes[meshes.length-2];
-      last_voxel = meshes[meshes.length-1];
-      console.log(lastlast_voxel);
-      console.log(last_voxel);
+    //   lastlast_voxel = meshes[meshes.length-2];
+    //   last_voxel = meshes[meshes.length-1];
+    // console.log(lastlast_voxel);
+    // console.log(last_voxel);
 
-      voxelstruct.testNewBlock( 0,0,1,0,1);
+      //voxelstruct.testNewBlock( 0,0,1,0,1);
+    //var test = voxelstruct.createNewBlock( -3,0,0,1);
+    //   console.log(test);
+
+    //voxelstruct.testNewBlock( -3,0,0,1,1);
       
       
     //   for(var i = 0; i < meshes.length; i++) {
@@ -499,27 +518,12 @@ function generateDebugPuzzle(voxelstruct) {
 
 }
 
-function generatePuzzle(n) {
-    var block = new Block(0,0,0, 0,1,0);
-    var block2 = new Block(1,0,0, 0,1,0);
-    var meshes = [];
-    meshes.push(block);
-    meshes.push(block2);
-    var t = 3;
-    var last = 0;
-    for(var i = 0; i < n; i++) {
-        var end = meshes.length-1;
-        var beg = end - 3;
-        if (beg < 0) {
-            beg = 0;
-        }
-        var buff = meshes.slice(beg,end);
-        console.log(buff);
-        var block3 = getAdjacentBlock(meshes[meshes.length-1],buff);
-        console.log(block3);
-        meshes.push(block3);
+function generatePuzzle(voxelstruct, n, lambmat) {
+    var puzzle = "0 0 0 1 1 0 0 1";
+    parsePuzzle(puzzle, voxelstruct);
+    for(var i = 0; i  < n - 2; i++) {
+        generateByPress(voxelstruct,lambmat);
     }
-    return meshes;
 }
 
 

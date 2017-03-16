@@ -43,7 +43,6 @@ var clock = new THREE.Clock();
     // Create a camera, zoom it out from the model a bit, and add it to the scene.
     camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 20000);
     camera.position.set(0,0,5);
-    camera.lookAt(new THREE.Vector3(0,0,0));
     camera_y = new THREE.Object3D();
     camera_y.position.set(0,0,0);
     camera_piv = new THREE.Object3D();
@@ -51,6 +50,17 @@ var clock = new THREE.Clock();
     camera_y.add(camera_piv);
     camera_piv.add( camera );
     scene.add(camera_y);
+
+    var playergeo = new THREE.SphereGeometry( 0.1, 32, 32 );
+    var playermat = new THREE.MeshBasicMaterial( {color: 0x78FFD2} );
+    var playersphere = new THREE.Mesh( playergeo, playermat );
+    scene.add( playersphere );
+    setPlayer(playersphere);
+
+
+    camera_piv.rotateX(-0.2);
+    camera_y.position.set(0,0,5);
+    camera.lookAt(camera_y.position);
 
 
       // Create an event listener that resizes the renderer with the browser window.
@@ -65,10 +75,16 @@ var clock = new THREE.Clock();
         
         
         var dirLight = new THREE.DirectionalLight(0xffffff, 1 );
-        dirLight.color.set(0xFFFFFF);
+        dirLight.color.set(0xFF8799);
         dirLight.position.set( -1, 1.75, 1 );
 
+        var dirLight2 = new THREE.DirectionalLight(0xffffff, 1 );
+        dirLight2.color.set(0xC95D63);
+        dirLight2.position.set( 0.5,0,-1 );
+        
+
          scene.add( dirLight );
+         scene.add( dirLight2 );
 
       var customMat = new THREE.ShaderMaterial({
             uniforms: {
@@ -82,11 +98,11 @@ var clock = new THREE.Clock();
   
       lambmat = new THREE.MeshLambertMaterial();
 
-      voxelstruct = new VoxelStruct(3, scene);
+      voxelstruct = new VoxelStruct(10, scene);
       console.log("n: " + voxelstruct.getn());
 
       generateDebugPuzzle(voxelstruct);
-      
+      //generatePuzzle(voxelstruct, 20,lambmat);
 
       var wire_mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
       var edge_mat = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 10 } );
@@ -109,6 +125,8 @@ var clock = new THREE.Clock();
       startPuzzle(voxelstruct);
 
       var num = 0;
+      var disp_edge = true;
+      if(disp_edge) {
       for(var i = 0; i < voxelstruct.getlength(); i++) {
             if(voxelstruct.getidx(i) != null) {
               var vox = voxelstruct.getidx(i);
@@ -130,6 +148,7 @@ var clock = new THREE.Clock();
                 }
               }
             }
+      }
       }
       console.log("number of edges total: " + num);
         
@@ -200,10 +219,8 @@ var clock = new THREE.Clock();
         renderer.render( scene, camera, pickingTexture );
         var pixelBuffer = new Uint8Array( 4 );
         renderer.readRenderTargetPixels(pickingTexture, x, pickingTexture.height- y, 1, 1, pixelBuffer);
-        console.log(pixelBuffer);
         var coor = "X coords: " + x + ", Y coords: " + y;
         var color = new THREE.Color(pixelBuffer[0]/255,pixelBuffer[1]/255,pixelBuffer[2]/255);
-        console.log(color);
         selectByColor(color, voxelstruct,lambmat);
     });
 
@@ -236,6 +253,12 @@ var clock = new THREE.Clock();
         a.normalize();
         camera_y.translateOnAxis ( new THREE.Vector3(a.x,a.y,a.z), 0.1 );
         //camera_y.position.y -= 0.1;
+        //camera.lookAt(camera_piv.position);
+    } else if(event.keyCode == 82) {
+        camera_y.position.y += 0.1;
+        //camera.lookAt(camera_piv.position);
+    } else if(event.keyCode == 70) {
+        camera_y.position.y -= 0.1;
         //camera.lookAt(camera_piv.position);
     } else if(event.keyCode == 65) {
         var a = new THREE.Vector4( 1, 0, 0 ,0);

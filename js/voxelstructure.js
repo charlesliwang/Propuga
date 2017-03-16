@@ -278,6 +278,10 @@ class VoxelStruct {
         // console.log(edge);
         // console.log(adjacentToEdge);
         var block_idx = edge.getFaceidx(bn,bx,by,bz);
+        console.log("original idx: " + block_idx);
+        console.log(edge);
+        console.log(adjacentToEdge);
+        
         // console.log("TEST FACE");
         var u = (edge.n + 2)%3;
         var r = edge.n + 1;
@@ -302,9 +306,12 @@ class VoxelStruct {
         } else {
             ccw_side = sidea;
         }
-        //console.log(cw_side);
-        //console.log(ccw_side);
-        //console.log(block_idx);
+        console.log("edge");
+        console.log(edge.n);
+        console.log("cw_side");
+        console.log(cw_side);
+        console.log("ccw_side");
+        console.log(ccw_side);
         var ef = (block_idx-1);
         if(ef < 0) {
             ef = 3;
@@ -317,6 +324,9 @@ class VoxelStruct {
                 var adjblock = adjacentToEdge[ef];
                 if((ef == 0 || ef == 1)) {
                 if(adjblock.dir > 0) {
+                    console.log("new cw connection");
+                    console.log(ef);
+                    console.log(adjblock);
                     cw_side.addTempNeighbor(adjblock.sideb);
                     adjblock.sideb.breakOldTempConnection(adjacentToEdge);
                     adjblock.sideb.addTempNeighbor(cw_side);
@@ -331,6 +341,9 @@ class VoxelStruct {
                 }
                 } else {
                 if(adjblock.dir > 0) {
+                    console.log("new cw connection");
+                    console.log(ef);
+                    console.log(adjblock);
                     cw_side.addTempNeighbor(adjblock.sidea);
                     adjblock.sidea.breakOldTempConnection(adjacentToEdge);
                     adjblock.sidea.addTempNeighbor(cw_side);
@@ -393,6 +406,10 @@ class VoxelStruct {
             ef = ef%4;
             //console.log(ef);
         } 
+        console.log("TEST NEW NEIGHBORS");
+        console.log(sidea);
+        console.log(sideb);
+
 
     }
 
@@ -514,7 +531,9 @@ class VoxelStruct {
 
     testEdge(x,y,z,i) {
         console.log("TEST EDGE " + i );
+        console.log("x: " + x + ", y: " + y + ", z: " + z); 
         var curr_vox = this.get(x,y,z);
+        console.log(curr_vox);
         if (i == 0) {
             var y_edge;
             var z_edge;
@@ -582,15 +601,11 @@ class VoxelStruct {
         //console.log(edges);
         var sidea = block.sidea;
         var sideb = block.sideb;
-        console.log(sidea);
-        console.log(sideb);
         for(var i = 0; i < edges.length; i++) {
             if(edges[i] != null) {
                 var curr_edge = edges[i];
                 var n1 = this.getNeighborOnEdge(block.sidea, curr_edge, block); 
-                console.log(n1);
                 var n2 = this.getNeighborOnEdge(block.sideb, curr_edge, block); 
-                console.log(n2);
                 if(n1 != null && n2 != null && n1.id != n2.id) {
                     n1.addNeighbor(n2);
                     n2.addNeighbor(n1);
@@ -619,7 +634,4 @@ class VoxelStruct {
             
         }
     }
-
-    
-
 }
