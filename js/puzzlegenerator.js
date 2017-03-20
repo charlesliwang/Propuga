@@ -521,7 +521,11 @@ function generateDebugPuzzle(voxelstruct) {
 
 }
 
+
+
 function generatePuzzle(voxelstruct, n, lambmat) {
+    Block.id = 0;
+    Edge.id = 0;
     var puzzle = "0 0 0 1 1 0 0 1";
     parsePuzzle(puzzle, voxelstruct);
     for(var i = 0; i  < n - 2; i++) {

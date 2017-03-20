@@ -147,7 +147,7 @@ function savePuzzle(voxelstructure) {
             puzzle += mesh.x + " " + mesh.y + " " + mesh.z + " " + mesh.n + " ";
       }
       puzzle = puzzle.trim();
-      console.log(puzzle);
+      return puzzle;
 }
 
 function selectByColor(color, voxelstructure, lambmat) {

@@ -10,6 +10,8 @@ var lights = [];
 var mixers = [];
 var clock = new THREE.Clock();
 
+var saved_puzzle;
+
 
     init();
     animate();
@@ -19,7 +21,6 @@ var clock = new THREE.Clock();
     // Sets up the scene.
     function init() {
       // Create the scene and set the scene size.
-    scene = new THREE.Scene();
     pickingTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight );
 	pickingTexture.texture.minFilter = THREE.LinearFilter;
     container = document.getElementById( 'TitleHeader' );
@@ -49,18 +50,11 @@ var clock = new THREE.Clock();
     camera_piv.position.set(0,0,0);
     camera_y.add(camera_piv);
     camera_piv.add( camera );
-    scene.add(camera_y);
-
-    var playergeo = new THREE.SphereGeometry( 0.1, 32, 32 );
-    var playermat = new THREE.MeshBasicMaterial( {color: 0x78FFD2} );
-    var playersphere = new THREE.Mesh( playergeo, playermat );
-    scene.add( playersphere );
-    setPlayer(playersphere);
+        camera_piv.rotateX(-0.2);
+        camera_y.position.set(0,0,0);
+        camera.lookAt(camera_y.position);
 
 
-    camera_piv.rotateX(-0.2);
-    camera_y.position.set(0,0,0);
-    camera.lookAt(camera_y.position);
 
 
       // Create an event listener that resizes the renderer with the browser window.
@@ -73,7 +67,22 @@ var clock = new THREE.Clock();
         camera.updateProjectionMatrix();
       });
         
-        
+        generateNewScene();
+
+        generateNewVoxelStructure(0);
+    }
+
+    function generateNewScene() {
+
+        scene = new THREE.Scene();
+        var playergeo = new THREE.SphereGeometry( 0.1, 32, 32 );
+        var playermat = new THREE.MeshBasicMaterial( {color: 0x78FFD2} );
+        var playersphere = new THREE.Mesh( playergeo, playermat );
+        scene.add( playersphere );
+        setPlayer(playersphere);
+
+
+        scene.add(camera_y);
         var dirLight = new THREE.DirectionalLight(0xffffff, 1 );
         dirLight.color.set(0xFF8799);
         dirLight.position.set( -1, 1.75, 1 );
@@ -81,28 +90,26 @@ var clock = new THREE.Clock();
         var dirLight2 = new THREE.DirectionalLight(0xffffff, 1 );
         dirLight2.color.set(0xC95D63);
         dirLight2.position.set( 0.5,0,-1 );
-        
 
-         scene.add( dirLight );
-         scene.add( dirLight2 );
+        scene.add( dirLight );
+        scene.add( dirLight2 );
+        console.log(scene);
+    }
 
-      var customMat = new THREE.ShaderMaterial({
-            uniforms: {
-                
-            },
-            vertexShader: document.
-                          getElementById('vertShader').text,
-            fragmentShader: document.
-                          getElementById('fragShader').text
-        });
-  
+    function generateNewVoxelStructure(option) {
       lambmat = new THREE.MeshLambertMaterial();
 
-      voxelstruct = new VoxelStruct(10, scene);
+      voxelstruct = new VoxelStruct(20, scene);
       console.log("n: " + voxelstruct.getn());
 
-      //generateDebugPuzzle(voxelstruct);
-      generatePuzzle(voxelstruct, 20,lambmat);
+      if(option == 0) {
+        generateDebugPuzzle(voxelstruct);
+      } else if (option == 1) {
+          console.log(saved_puzzle);
+        parsePuzzle(saved_puzzle, voxelstruct);
+      } else {
+        generatePuzzle(voxelstruct, 20,lambmat);
+      }
 
       var wire_mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
       var edge_mat = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 10 } );
@@ -153,7 +160,6 @@ var clock = new THREE.Clock();
       console.log("number of edges total: " + num);
         
     }
-
 
     // Renders the scene and updates the render as needed.
     function animate() {
@@ -353,7 +359,13 @@ var clock = new THREE.Clock();
         camera_y.translateOnAxis ( new THREE.Vector3(a.x,a.y,a.z), 0.1 );
         //camera.lookAt(camera_piv.position);
     } else if(event.keyCode == 80) {
-        savePuzzle(voxelstruct);
+        saved_puzzle = savePuzzle(voxelstruct);
+        console.log(saved_puzzle);
+        generateNewScene();
+        generateNewVoxelStructure(1);
+    } else if(event.keyCode == 79) {
+        generateNewScene();
+        generateNewVoxelStructure(2);
     } else if(event.keyCode == 49) {
         stepToNextBlock(voxelstruct,0,lambmat);
     } else if(event.keyCode == 50) {
