@@ -3,6 +3,10 @@ var scene, camera, renderer, canvas;
 var pickingTexture;
 var camera_piv;
 var camera_y;
+var mainmenu_sprite;
+var winmenu_sprite;
+var losemenu_sprite;
+var instructmenu_sprite;
 
 var container = document.getElementById( 'TitleHeader' );
 var objects = [];
@@ -11,6 +15,12 @@ var mixers = [];
 var clock = new THREE.Clock();
 
 var saved_puzzle;
+var mode = 0; 
+// Main Menu = 0
+// Playing = 1
+// Next Menu = 2
+
+var num_generations = 10;
 
 
     init();
@@ -40,6 +50,7 @@ var saved_puzzle;
     renderer.shadowMap.enabled = true;
 	  renderer.shadowMap.renderReverseSided = false;
     renderer.shadowMapType = THREE.PCFSoftShadowMap;
+
         
     // Create a camera, zoom it out from the model a bit, and add it to the scene.
     camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 20000);
@@ -53,7 +64,45 @@ var saved_puzzle;
         camera_piv.rotateX(-0.2);
         camera_y.position.set(0,0,0);
         camera.lookAt(camera_y.position);
+    var mainMenuMap = new THREE.TextureLoader().load( "textures/ui_mainmenu.png" );
+    var mainMenuMat = new THREE.SpriteMaterial( { map: mainMenuMap, color: 0xffffff } );
+    mainMenuMat.depthTest = false
+    mainmenu_sprite = new THREE.Sprite( mainMenuMat );
+    mainmenu_sprite.position.set(0,0,-1);
+    mainmenu_sprite.scale.set(1,1,1);
+        camera.add( mainmenu_sprite );
+    
+    var winMenuMap = new THREE.TextureLoader().load( "textures/ui_win.png" );
+    var winMenuMat = new THREE.SpriteMaterial( { map: winMenuMap, color: 0xffffff } );
+    winMenuMat.depthTest = false
+    winmenu_sprite = new THREE.Sprite( winMenuMat );
+    winmenu_sprite.position.set(0,0,-1);
+    winmenu_sprite.scale.set(1,1,1);
+    winmenu_sprite.visible = false;
+    camera.add( winmenu_sprite );
+    
+    var loseMenuMap = new THREE.TextureLoader().load( "textures/ui_lose.png" );
+    var loseMenuMat = new THREE.SpriteMaterial( { map: loseMenuMap, color: 0xffffff } );
+    loseMenuMat.depthTest = false
+    losemenu_sprite = new THREE.Sprite( loseMenuMat );
+    losemenu_sprite.position.set(0,0,-1);
+    losemenu_sprite.scale.set(1,1,1);
+    losemenu_sprite.visible = false;
+    camera.add( losemenu_sprite );
 
+    var instructMenuMap = new THREE.TextureLoader().load( "textures/ui_instructions.png" );
+    var instructMenuMat = new THREE.SpriteMaterial( { map: instructMenuMap, color: 0xffffff } );
+    instructMenuMat.depthTest = false
+    instructmenu_sprite = new THREE.Sprite( instructMenuMat );
+    instructmenu_sprite.position.set(0,0,-1);
+    instructmenu_sprite.scale.set(0.9,0.9,0.9);
+    instructmenu_sprite.visible = false;
+    camera.add( instructmenu_sprite );
+
+
+
+        scene = new THREE.Scene();
+        scene.add(camera_y);
 
 
 
@@ -67,9 +116,6 @@ var saved_puzzle;
         camera.updateProjectionMatrix();
       });
         
-        generateNewScene();
-
-        generateNewVoxelStructure(0);
     }
 
     function generateNewScene() {
@@ -108,11 +154,11 @@ var saved_puzzle;
           console.log(saved_puzzle);
         parsePuzzle(saved_puzzle, voxelstruct);
       } else {
-        generatePuzzle(voxelstruct, 20,lambmat);
+        generatePuzzle(voxelstruct, num_generations,lambmat);
       }
 
-      var wire_mat = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 2 } );
-      var edge_mat = new THREE.LineBasicMaterial( { color: 0xff0000, linewidth: 10 } );
+      var wire_mat = new THREE.LineBasicMaterial( { color: 0xffffff } );
+      var edge_mat = new THREE.LineBasicMaterial( { color: 0xff0000 } );
 
 
 
@@ -226,7 +272,8 @@ var saved_puzzle;
     y_pos = 0;
     dx = 0;
     dy = 0;
-    document.addEventListener('mousedown', function(event) {   
+    document.addEventListener('mousedown', function(event) {
+        if(mode != 0) {
         var ctrlKeyPressed = event.altKey;
         var shiftKeyPressed = event.shiftKey;
         if(ctrlKeyPressed) {
@@ -260,6 +307,7 @@ var saved_puzzle;
         var coor = "X coords: " + x + ", Y coords: " + y;
         var color = new THREE.Color(pixelBuffer[0]/255,pixelBuffer[1]/255,pixelBuffer[2]/255);
         selectByColor(color, voxelstruct,lambmat);
+        }
         }
     });
 
@@ -312,6 +360,22 @@ var saved_puzzle;
         
     });
 
+    function win() {
+        winmenu_sprite.visible = true;
+        mode = 2;
+    }
+
+    function lose() {
+        losemenu_sprite.visible = true;
+        mode = 2;
+    }
+
+    function turnOffUI() {
+        winmenu_sprite.visible = false;
+        losemenu_sprite.visible = false;
+        mainmenu_sprite.visible = false;
+        instructmenu_sprite.visible = false;
+    }
 
     x_rot = 0;
     y_rot = 0;
@@ -358,12 +422,19 @@ var saved_puzzle;
         a.normalize();
         camera_y.translateOnAxis ( new THREE.Vector3(a.x,a.y,a.z), 0.1 );
         //camera.lookAt(camera_piv.position);
-    } else if(event.keyCode == 80) {
+    } else if(event.keyCode == 73) {
+        if(mode == 0) {
+            turnOffUI();
+            instructmenu_sprite.visible = true;
+        }
+    } else if(event.keyCode == 79) {
+        turnOffUI();
         saved_puzzle = savePuzzle(voxelstruct);
         console.log(saved_puzzle);
         generateNewScene();
         generateNewVoxelStructure(1);
-    } else if(event.keyCode == 79) {
+    } else if(event.keyCode == 80) {
+        turnOffUI();
         generateNewScene();
         generateNewVoxelStructure(2);
     } else if(event.keyCode == 49) {
@@ -374,7 +445,13 @@ var saved_puzzle;
         stepToNextBlock(voxelstruct,2,lambmat);
     } else if(event.keyCode == 52) {
         stepToNextBlock(voxelstruct,3,lambmat);
-    } else if(event.keyCode == 53) {
+    } else if(event.keyCode == 32) {
+        if(mode == 0) {
+            turnOffUI();
+            generateNewScene();
+            generateNewVoxelStructure(2);
+            mode = 1;
+        }
 
 
         

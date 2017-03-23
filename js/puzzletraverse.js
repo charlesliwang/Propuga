@@ -114,10 +114,11 @@ function stepToNextNeighbor(voxelstructure, d, lambmat) {
     if(last_neighbors.length == 0) {
         if(voxelstructure.numBlocks != 1) {
             //console.log("YOU LOSE");
-            alert("YOU LOSE");
+            lose();
         } else {
             //console.log("YOU WIN");
-            alert("YOU WIN");
+            //alert("YOU WIN");
+            win();
         }
     }
 
