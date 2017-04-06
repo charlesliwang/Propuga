@@ -166,6 +166,19 @@ class Block {
           return this.z;
       }
   }
+
+  getWorldPos() {
+      var pos = [this.x + 0.5, this.y + 0.5, this.z + 0.5];
+      if(this.n == 0) {
+        pos[0] = this.x;
+      } else if (this.n == 1) {
+        pos[1] = this.y;
+      } else  {
+        pos[2] = this.z;
+      }
+      return pos;
+  }
+  
 }
 
 Block.id = 0;

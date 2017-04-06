@@ -20,7 +20,7 @@ var mode = 0;
 // Playing = 1
 // Next Menu = 2
 
-var num_generations = 10;
+var num_generations = 5;
 
 
     init();
@@ -121,6 +121,7 @@ var num_generations = 10;
     function generateNewScene() {
 
         scene = new THREE.Scene();
+        
         var playergeo = new THREE.SphereGeometry( 0.1, 32, 32 );
         var playermat = new THREE.MeshBasicMaterial( {color: 0x78FFD2} );
         var playersphere = new THREE.Mesh( playergeo, playermat );
@@ -219,6 +220,7 @@ var num_generations = 10;
         for ( var i = 0; i < mixers.length; i ++ ) {
             mixers[ i ].update( clockdelta );
         }
+      TWEEN.update();
       renderer.render(scene, camera);
 
     }
