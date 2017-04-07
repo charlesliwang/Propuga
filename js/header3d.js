@@ -20,7 +20,10 @@ var mode = 0;
 // Playing = 1
 // Next Menu = 2
 
-var num_generations = 5;
+var num_generations = 10;
+
+var edges_in_scene = [];
+var edge_visibility = false;
 
 
     init();
@@ -144,6 +147,7 @@ var num_generations = 5;
     }
 
     function generateNewVoxelStructure(option) {
+      edges_in_scene = [];
       lambmat = new THREE.MeshLambertMaterial();
 
       voxelstruct = new VoxelStruct(20, scene);
@@ -199,6 +203,8 @@ var num_generations = 5;
                   var line = edge.getLine();   
                   var edge_disp = new THREE.LineSegments( line, edge_mat );
                   scene.add( edge_disp );
+                  edges_in_scene.push(edge_disp);
+                  edge_visibility = true;
                 }
               }
             }
@@ -439,15 +445,7 @@ var num_generations = 5;
         turnOffUI();
         generateNewScene();
         generateNewVoxelStructure(2);
-    } else if(event.keyCode == 49) {
-        stepToNextBlock(voxelstruct,0,lambmat);
-    } else if(event.keyCode == 50) {
-        stepToNextBlock(voxelstruct,1,lambmat);
-    } else if(event.keyCode == 51) {
-        stepToNextBlock(voxelstruct,2,lambmat);
-    } else if(event.keyCode == 52) {
-        stepToNextBlock(voxelstruct,3,lambmat);
-    } else if(event.keyCode == 32) {
+    }  else if(event.keyCode == 32) {
         if(mode == 0) {
             turnOffUI();
             generateNewScene();
@@ -458,6 +456,39 @@ var num_generations = 5;
 
         
 
+    } else if(event.keyCode == 190) {
+        if(mode == 0) {
+            turnOffUI();
+            generateNewScene();
+            generateNewVoxelStructure(0);
+            mode = 1;
+        }
+    } else if(event.keyCode == 69) {
+        if(edge_visibility){
+            edge_visibility = false;
+            for(var i = 0; i < edges_in_scene.length; i++) {
+                edges_in_scene[i].visible = false;
+            }
+        } else {
+            edge_visibility = true;
+            for(var i = 0; i < edges_in_scene.length; i++) {
+                edges_in_scene[i].visible = true;
+            }
+        }
+    }
+    else if(event.keyCode == 48) {
+        //easy mode
+        num_generations = 3;
+    }
+    else if(event.keyCode == 49) {
+        //easy mode
+        num_generations = 10;
+    } else if(event.keyCode == 50) {
+        //hard mode
+        num_generations = 20;
+    } else if(event.keyCode == 51) {
+        //super hard mode
+        num_generations = 30;
     }
     
     });

@@ -1,6 +1,8 @@
 var last_voxel;
 var lastlast_voxel;
 
+var generation_bias;
+
 function randomAvailable(options) {
     var available_options = [];
     for(var i = 0; i < options.length; i++) {
@@ -21,8 +23,20 @@ function generate(last, lastlast, voxelstruct, lambmat) {
     //console.log("GENERATING");
     //console.log(lastlast_voxel);
     //console.log(last_voxel);
+    var norm_dist = generation_bias.clone();
+    norm_dist.normalize();
+    console.log("norm_dist");
+    console.log(norm_dist);
     var return_voxel;
     var options = [true,true,true,true,true,true,true,true,true,true,true,true];
+    var rand_thresh = Math.random();
+    //console.log("rand " + rand_thresh)
+    if(rand_thresh < 0.8) {
+        options[1] = false;
+        options[4] = false;
+        options[7] = false;
+        options[10] = false;
+    }
     var x = last.x;
     var y = last.y;
     var z = last.z;
@@ -206,7 +220,7 @@ function generate(last, lastlast, voxelstruct, lambmat) {
             }
         }
         if(lastlast.n == 2) {
-            if(lastlast.z < last.z) {
+            if(lastlast.z == last.z) {
                 options[0] = false;
                 options[1] = false;
                 options[2] = false;
@@ -348,7 +362,7 @@ function generate(last, lastlast, voxelstruct, lambmat) {
             }
         }
         if(lastlast.n == 0) {
-            if(lastlast.x < last.x) {
+            if(lastlast.x == last.x) {
                 options[6] = false;
                 options[7] = false;
                 options[8] = false;
@@ -498,6 +512,10 @@ function generateDebugPuzzle(voxelstruct) {
     puzzle = "0 0 0 1 1 0 0 1 1 0 0 2 2 0 0 2 3 0 0 2 3 1 0 1 3 0 0 0 2 0 0 1 2 0 1 2 2 0 0 0 2 1 0 1 2 1 0 0 1 2 0 1 1 1 0 2 0 1 0 2 -1 1 0 2 -1 1 0 0 -1 1 1 2 -1 1 0 1 -2 1 0 1";
     puzzle = "0 0 0 1 1 0 0 1 1 0 0 2 0 0 0 2 0 1 -1 1 0 1 -1 2 0 1 -2 0 0 0 -2 0 0 0 -1 0 0 0 0 0 -1 0 1 2 -1 1 1 1 -1 1 1 0 -1 1 0 0 -1 1 -1 0 -1 2 -1 0 -2 3 -1 1 -2 2 -1 0 -2 2 -1 2 -2 3 -2 1";
     //puzzle = "0 0 0 1 1 0 0 1 1 -1 0 2 1 -1 -1 1 2 -1 -1 1 3 -1 -1 0 2 -1 -1 2 1 -1 -1 2 1 0 -2 1 1 -1 -2 2 1 -2 -2 2 1 -2 -2 0 1 -2 -1 0 0 -2 0 2 -1 -2 0 2 -1 -1 -1 1 0 -1 -1 0 0 -1 0 2 0 0 0 2 0 0 0 0 -1 0 0 1 -1 0 1 2 -2 0 1 2 -2 0 0 0 -2 -1 0 0 -2 -1 0 1 -2 -1 1 1 -2 -1 2 1 -2 -2 2 0 -2 -2 1 0 -2 -2 0 0 -3 -2 0 2 -3 -1 0 2"
+    
+    puzzle = "0 0 0 1 1 0 0 1 1 0 -1 1 1 -1 -1 2 0 -1 -1 0 0 -1 0 2 -1 -1 0 2 -1 0 0 1 0 0 0 0 -1 1 0 1";
+    puzzle = "0 0 0 1 1 0 0 1 1 0 0 2 1 0 0 0 1 1 0 1 1 0 1 2 2 0 1 0 1 0 2 2 1 1 1 1 1 1 1 0";
+    //puzzle = "0 0 0 1 1 0 0 1 1 0 0 2";
     parsePuzzle(puzzle, voxelstruct);
     //voxelstruct.createNewBlock(0,0,1,0);
 
@@ -528,6 +546,7 @@ function generatePuzzle(voxelstruct, n, lambmat) {
     Edge.id = 0;
     var puzzle = "0 0 0 1 1 0 0 1";
     parsePuzzle(puzzle, voxelstruct);
+    generation_bias = new THREE.Vector3(0,0,0);
     for(var i = 0; i  < n - 2; i++) {
         generateByPress(voxelstruct,lambmat);
     }
@@ -541,6 +560,15 @@ function generateByPress(voxelstruct,lambmat) {
     lastlast_voxel = last_voxel;
     //console.log(lastlast_voxel.id);
     last_voxel = return_voxel;
+    
+    var lastWP = last_voxel.getWorldPos();
+    var lastlastWP = lastlast_voxel.getWorldPos();
+    var currDist = new THREE.Vector3(lastWP[0]-lastlastWP[0],lastWP[1]-lastlastWP[1], lastWP[2]- lastlastWP[2]);
+    generation_bias.add(currDist);
+    // console.log("currDist");
+    // console.log(currDist);
+    // console.log("generation_bias");
+    // console.log(generation_bias);
     //console.log(last_voxel.id);
     //console.log("FLAG");
     //console.log(voxelstruct);

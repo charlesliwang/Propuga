@@ -40,7 +40,10 @@ function setPlayer(p) {
     player = p;
 }
 
+var startpathanim = false;
+
 function updatePlayerPos(currside,side) {
+    startpathanim = false;
     var nx = side.block.x + 0.5;
     var ny = side.block.y + 0.5;
     var nz = side.block.z + 0.5;
@@ -60,14 +63,21 @@ function updatePlayerPos(currside,side) {
         //         player.position.set(position.x,position.y, position.z);
         //     });
         // }
+        if(side.block.n == 0) {
+            nx += -0.4;
+        } else if (side.block.n == 1) {
+            ny += -0.4;
+        } else if (side.block.n == 2) {
+            nz += -0.4;
+        }
         
     } else {
         if(side.block.n == 0) {
-            nx -= 1;
+            nx -= 0.6;
         } else if(side.block.n == 1) {
-            ny -= 1;
+            ny -= 0.6;
         } else if(side.block.n == 2) {
-            nz -= 1;
+            nz -= 0.6;
         }
     }
         var position = { x : player.position.x, y: player.position.y, z: player.position.z};
@@ -97,6 +107,10 @@ function updatePlayerPos(currside,side) {
             tween2.onUpdate(function(){ 
                 player.position.set(inter.x,inter.y, inter.z);
             });
+            tween2.onComplete(function(){
+                console.log("done");
+                startpathanim = true;
+            });
             });
         } else {
             var tween = new TWEEN.Tween( position ).to( target, 400 );
@@ -104,11 +118,16 @@ function updatePlayerPos(currside,side) {
             tween.onUpdate(function(){ 
                 player.position.set(position.x,position.y, position.z);
             });
+            tween.onComplete(function(){
+                console.log("done");
+                startpathanim = true;
+            });
         }
         //player.position.set(x,y,z);
 }
 
 function startPuzzle(voxelstructure) {
+    startpathanim = false;
     //console.log("pos");
     //console.log(player.position);
     travelpath = [];
@@ -116,13 +135,13 @@ function startPuzzle(voxelstructure) {
     animatednorm = [];
     console.log("current path: "); 
     console.log(travelpath); 
-    player.position.set(0.5,0.5,0.5);
+    //player.position.set(0.5,0.1,0.5);
     last_side = voxelstructure.blocks[0].sidea;
     var face = last_side.block.mesh;
     face.material = currmat;
     setNeighborColors(voxelstructure);
     voxelstructure.numBlocks = voxelstructure.blocks.length;
-    player.position.set(0.5,0.5,0.5);
+    player.position.set(0.5,0.1,0.5);
 }
 
 function stepToNextBlock(voxelstructure, d, lambmat) {
@@ -236,6 +255,10 @@ function selectByColor(color, voxelstructure, lambmat) {
 }
 
 function getPathSetColor(voxelstructure) {
+    console.log(startpathanim);
+    // while(!startpathanim)  {
+    // console.log("wait");
+    // }
     for(var i = 0; i < travelpath.length; i++) {
         if(i != 0) {
             var s0 = travelpath[i-1];
@@ -244,11 +267,17 @@ function getPathSetColor(voxelstructure) {
         }
         //travelpath[i].block.mesh.visible = true;
     }
-    animateWinPath(animatepath[0],0, voxelstructure);
+    var tween = new TWEEN.Tween( 0 ).to( 1, 1000 );
+    tween.start();
+    tween.onUpdate(function(){ 
+    
+    });
+    tween.onComplete(function(){
+        animateWinPath(animatepath[0],0, voxelstructure);
+    });
 }
 
 function animateWinPath(curve, idx, voxelstructure) {
-    console.log("norm: " + animatednorm[idx]);
     var norm = animatednorm[idx];
     var x1 = curve.geometry.vertices[0].x;
     var y1 = curve.geometry.vertices[0].y;
@@ -263,7 +292,6 @@ function animateWinPath(curve, idx, voxelstructure) {
     dir.x/=max;
     dir.y/=max;
     dir.z/=max;
-    console.log(max);
     //curve.visible = true;
     var scale = 0;
     var v1 = new THREE.Vector3(x1,y1,z1);
@@ -271,11 +299,13 @@ function animateWinPath(curve, idx, voxelstructure) {
     var v3 = new THREE.Vector3(x2,y2,z2);
     var v4 = new THREE.Vector3(x2,y2,z2);
     var fbuf = 0.3;
-    var bbuf = 0.3;
+    var bbuf = -0.3;
     if(idx != 0) {
         if(animatednorm[idx] != animatednorm[idx-1]) {
             bbuf = 0;
         }
+    } else {
+        bbuf = 0.3;
     }
     if(idx < animatednorm.length - 1) {
         if(animatednorm[idx] != animatednorm[idx+1]) {
@@ -342,14 +372,19 @@ function animateWinPath(curve, idx, voxelstructure) {
     var t = {x:0};
     var tn = {x:1};
     geom.visible = false;
-    var tw = new TWEEN.Tween( t ).to( tn, 1000 );
-    tw.start();
+    var animlength = 5000/num_generations;
+    if (max < 0.9) {
+        animlength /= 2;
+    }
+    var tw = new TWEEN.Tween( t ).to( tn, animlength );
     geom.verticesNeedUpdate = true;
     geom.vertices[3].lerpVectors(geom.vertices[0],e4,0);
     geom.vertices[2].lerpVectors(geom.vertices[1],e3,0);
     geom.visible = true;
+    tw.start();
     tw.onUpdate(function(){ 
         //console.log(t.x);
+        //console.log("go");
         geom.verticesNeedUpdate = true;
         geom.vertices[3].lerpVectors(geom.vertices[0],e4,t.x);
         geom.vertices[2].lerpVectors(geom.vertices[1],e3,t.x);
