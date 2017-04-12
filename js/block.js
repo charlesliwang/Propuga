@@ -97,30 +97,32 @@ class Block {
     this.z = z;
     this.n = n;
     var v1,v2,v3,v4;
+    var vc;
     if (n == 2) {
-        v1 = new THREE.Vector3(0,0,0);
-        v2 = new THREE.Vector3(0,1,0);
-        v3 = new THREE.Vector3(1,1,0);
-        v4 = new THREE.Vector3(1,0,0);
-
+        v1 = new THREE.Vector3(-0.5,-0.5,0);
+        v2 = new THREE.Vector3(-0.5,0.5,0);
+        v3 = new THREE.Vector3(0.5,0.5,0);
+        v4 = new THREE.Vector3(0.5,-0.5,0);
+        vc = new THREE.Vector3(x+0.5,y+0.5,z);
     }
     else if (n == 0) {
-        v1 = new THREE.Vector3(0,0,0);
-        v2 = new THREE.Vector3(0,1,0);
-        v3 = new THREE.Vector3(0,1,1);
-        v4 = new THREE.Vector3(0,0,1);
+        v1 = new THREE.Vector3(0,-0.5,-0.5);
+        v2 = new THREE.Vector3(0,0.5,-0.5);
+        v3 = new THREE.Vector3(0,0.5,0.5);
+        v4 = new THREE.Vector3(0,-0.5,0.5);
+        vc = new THREE.Vector3(x,y+0.5,z+0.5);
     } 
     else if (n == 1) {
-        v1 = new THREE.Vector3(0,0,0);
-        v2 = new THREE.Vector3(0,0,1);
-        v3 = new THREE.Vector3(1,0,1);
-        v4 = new THREE.Vector3(1,0,0);
+        v1 = new THREE.Vector3(-0.5,0,-0.5);
+        v2 = new THREE.Vector3(-0.5,0,0.5);
+        v3 = new THREE.Vector3(0.5,0,0.5);
+        v4 = new THREE.Vector3(0.5,0,-0.5);
+        vc = new THREE.Vector3(x+0.5,y,z+0.5);
     }
-    var vc = new THREE.Vector3(x,y,z);
-    v1.add(vc);
-    v2.add(vc);
-    v3.add(vc);
-    v4.add(vc);
+    // v1.add(vc);
+    // v2.add(vc);
+    // v3.add(vc);
+    // v4.add(vc);
     var geom = new THREE.Geometry();
     geom.vertices.push(v1);
     geom.vertices.push(v2);
@@ -130,6 +132,7 @@ class Block {
     geom.faces.push( new THREE.Face3( 0, 2, 3 ) );
     geom.computeFaceNormals();
     var mesh= new THREE.Mesh( geom );
+    mesh.position.set(vc.x,vc.y,vc.z);
     this.mesh = mesh;
   }
 

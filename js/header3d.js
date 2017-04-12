@@ -122,7 +122,8 @@ var edge_visibility = false;
     }
 
     function generateNewScene() {
-
+        last_voxel = null;
+        lastlast_voxel = null;
         scene = new THREE.Scene();
         
         var playergeo = new THREE.SphereGeometry( 0.1, 32, 32 );

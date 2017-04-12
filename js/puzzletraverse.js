@@ -42,7 +42,7 @@ function setPlayer(p) {
 
 var startpathanim = false;
 
-function updatePlayerPos(currside,side) {
+function updatePlayerPos(currside,side,voxelstructure) {
     startpathanim = false;
     var nx = side.block.x + 0.5;
     var ny = side.block.y + 0.5;
@@ -96,13 +96,27 @@ function updatePlayerPos(currside,side) {
             } else if (currside.n == 2) {
                 inter.z = position.z;
             }
-            var tween = new TWEEN.Tween( position ).to( inter, 300 );
+
+        } else {
+            var inter = { x : (nx + position.x)/2, y: (ny + position.y)/2, z: (nz + position.z)/2 };
+        }
+            if(side.block.n == 0) {
+                inter.x += 0.1*side.side;
+            } else if (side.block.n == 1) {
+                inter.y += 0.1*side.side;
+            } else if (side.block.n == 2) {
+                inter.z += 0.1*side.side;
+            }
+ 
+            var tween = new TWEEN.Tween( position ).to( inter, 200 );
+            tween.easing(TWEEN.Easing.Quadratic.Out);
             tween.start();
             tween.onUpdate(function(){ 
                 player.position.set(position.x,position.y, position.z);
             });
-             tween.onComplete(function(){
-            var tween2 = new TWEEN.Tween( inter ).to( target, 300 );
+            tween.onComplete(function(){
+            var tween2 = new TWEEN.Tween( inter ).to( target, 200);
+            tween2.easing(TWEEN.Easing.Quadratic.In);
             tween2.start();
             tween2.onUpdate(function(){ 
                 player.position.set(inter.x,inter.y, inter.z);
@@ -110,20 +124,48 @@ function updatePlayerPos(currside,side) {
             tween2.onComplete(function(){
                 console.log("done");
                 startpathanim = true;
+    setNeighborColors(voxelstructure);
+                animateStepOnBlock(side);
             });
             });
-        } else {
-            var tween = new TWEEN.Tween( position ).to( target, 400 );
-            tween.start();
-            tween.onUpdate(function(){ 
-                player.position.set(position.x,position.y, position.z);
-            });
-            tween.onComplete(function(){
-                console.log("done");
-                startpathanim = true;
-            });
-        }
         //player.position.set(x,y,z);
+}
+
+function animateStepOnBlock(side) {
+    var block = side.block;
+    var dir;
+    if(block.n == 0) {
+        dir = new THREE.Vector3(1,0,0);
+    } else if (block.n == 1) {
+        dir = new THREE.Vector3(0,1,0);
+    } else {
+        dir = new THREE.Vector3(0,0,1);
+    }
+    dir.multiplyScalar(-side.side);
+    console.log(dir);
+    var origPos = block.mesh.position.clone();
+    var playerOP = player.position.clone();
+    console.log(origPos);
+    var start = { x : -0.1};
+    var target = { x : 0.1};
+    var tween = new TWEEN.Tween( start ).to( target, 250 );
+    tween.start();
+            tween.onUpdate(function(){ 
+                var absscale = 0.9 + Math.abs(start.x);
+                var absoff = 0.1 - Math.abs(start.x);
+                var orig_copy = origPos.clone();
+                var dir_copy = dir.clone();
+                dir_copy.multiplyScalar(absoff);
+                orig_copy.add(dir_copy);
+                var playerOPC = playerOP.clone();
+                playerOPC.add(dir_copy);
+                block.mesh.position.set(orig_copy.x,orig_copy.y,orig_copy.z)
+                player.position.set(playerOPC.x,playerOPC.y,playerOPC.z);
+                block.mesh.scale.set(absscale,absscale,absscale);
+    });
+            tween.onComplete(function(){
+                console.log("done block anime");
+    });
 }
 
 function startPuzzle(voxelstructure) {
@@ -144,46 +186,6 @@ function startPuzzle(voxelstructure) {
     player.position.set(0.5,0.1,0.5);
 }
 
-function stepToNextBlock(voxelstructure, d, lambmat) {
-    resetNeighborColors(lambmat);
-    //console.log(last_side);
-    var block = last_side.block;
-    var edge = block.edges[d];
-    var adj = edge.getAdjacent(block.id);
-    //console.log(adj);
-    for(var i=0; i < adj.length; i++) {
-        //console.log("test");
-        if(adj[i] != null) {
-            if(last_side.inNeighbors(adj[i].sidea) >= 0) {
-                delete_this = last_side.block.mesh;
-                voxelstructure.removeBlockUpdateGraph(last_side.block);
-                travelpath.push(last_side);
-                last_side = adj[i].sidea;
-                //console.log(last_side);
-                var face = last_side.block.mesh;
-                face.material = currmat;
-                delete_this.visible = false;
-                setNeighborColors();
-                break;
-            }
-            if(last_side.inNeighbors(adj[i].sideb) >= 0) {
-                delete_this = last_side.block.mesh;
-                voxelstructure.removeBlockUpdateGraph(last_side.block);
-                travelpath.push(last_side);
-    console.log("current path: "); 
-    console.log(travelpath); 
-                last_side = adj[i].sideb;
-                //console.log(last_side);
-                var face = last_side.block.mesh;
-                face.material = currmat;
-                delete_this.visible = false;
-                setNeighborColors();
-                break;
-            }
-        }
-    }
-}
-
 function stepToNextNeighbor(voxelstructure, d, lambmat) {
     resetNeighborColors(lambmat);
     //console.log(last_side);
@@ -193,11 +195,35 @@ function stepToNextNeighbor(voxelstructure, d, lambmat) {
     travelpath.push(last_side);
     last_side = last_neighbors[d];
     //console.log(last_side);
+    destroyLastBlock(delete_this);
+    updatePlayerPos(block,last_side,voxelstructure);
+
+
+}
+
+function destroyLastBlock(delete_this) {
+    var start = { x : 1};
+    var target = { x : 0};
+    var tween = new TWEEN.Tween( start ).to( target, 250 );
+    tween.easing(TWEEN.Easing.Quadratic.In);
+    tween.start();
+    tween.onUpdate(function(){ 
+        delete_this.scale.set(start.x,start.x,start.x);
+    });
+    tween.onComplete(function(){  
+        delete_this.visible = false;
+    });
+}
+
+function setNeighborColors(voxelstructure) {
+
     var face = last_side.block.mesh;
     face.material = currmat;
-    delete_this.visible = false;
-    updatePlayerPos(block,last_side);
-    setNeighborColors(voxelstructure);
+    last_neighbors = last_side.neighbors;
+    ////console.log(last_neighbors.length);
+    for(var i = 0; i < last_neighbors.length; i++) {
+        last_neighbors[i].block.mesh.material = next_mats[i];
+    }    
     if(last_neighbors.length == 0) {
         if(voxelstructure.numBlocks != 1) {
             //console.log("YOU LOSE");
@@ -209,15 +235,6 @@ function stepToNextNeighbor(voxelstructure, d, lambmat) {
             getPathSetColor(voxelstructure);
             
         }
-    }
-
-}
-
-function setNeighborColors(voxelstructure) {
-    last_neighbors = last_side.neighbors;
-    ////console.log(last_neighbors.length);
-    for(var i = 0; i < last_neighbors.length; i++) {
-        last_neighbors[i].block.mesh.material = next_mats[i];
     }
     
 }
