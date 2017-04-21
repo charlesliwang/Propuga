@@ -1,14 +1,14 @@
 traversedmat = new THREE.MeshBasicMaterial();
-traversedmat.color.setHex(0x496DDB);
+traversedmat.color.setHex(0x00adee);
 traversedmat.side = THREE.DoubleSide;
 traversedmat1 = new THREE.MeshBasicMaterial();
-traversedmat1.color.setHex(0x6C8AE5);
+traversedmat1.color.setHex(0x009ed9);
 traversedmat1.side = THREE.DoubleSide;
 traversedmat2 = new THREE.MeshBasicMaterial();
-traversedmat2.color.setHex(0x0F38B4);
+traversedmat2.color.setHex(0x009ccc);
 traversedmat2.side = THREE.DoubleSide;
 traversedmat3 = new THREE.MeshBasicMaterial();
-traversedmat3.color.setHex(0x2852D0);
+traversedmat3.color.setHex(0x00a4bf);
 traversedmat3.side = THREE.DoubleSide;
 
 pathmat = new THREE.MeshBasicMaterial();
@@ -122,7 +122,6 @@ function updatePlayerPos(currside,side,voxelstructure) {
                 player.position.set(inter.x,inter.y, inter.z);
             });
             tween2.onComplete(function(){
-                console.log("done");
                 startpathanim = true;
     setNeighborColors(voxelstructure);
                 animateStepOnBlock(side);
@@ -164,7 +163,6 @@ function animateStepOnBlock(side) {
                 block.mesh.scale.set(absscale,absscale,absscale);
     });
             tween.onComplete(function(){
-                console.log("done block anime");
     });
 }
 

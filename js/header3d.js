@@ -7,6 +7,12 @@ var mainmenu_sprite;
 var winmenu_sprite;
 var losemenu_sprite;
 var instructmenu_sprite;
+var gamemenu_sprite;
+var pausemenu_sprite;
+
+var easyMap;
+var mediumMap;
+var hardMap;
 
 var container = document.getElementById( 'TitleHeader' );
 var objects = [];
@@ -19,6 +25,7 @@ var mode = 0;
 // Main Menu = 0
 // Playing = 1
 // Next Menu = 2
+// Pause Menu = 3
 
 var num_generations = 10;
 
@@ -42,12 +49,13 @@ var edge_visibility = false;
 
     canvas = document.createElement('canvas');
 
-    renderer = new THREE.WebGLRenderer({antialias:true, canvas:canvas});
+    renderer = new THREE.WebGLRenderer({antialias:true, canvas:canvas, alpha:true});
     renderer.setSize(WIDTH, HEIGHT);
     container.appendChild( renderer.domElement );
 
     
-    renderer.setClearColor( 0x457f96 );
+    //renderer.setClearColor( 0x457f96 );
+    renderer.setClearAlpha(0);
     renderer.setPixelRatio( window.devicePixelRatio );
         
     renderer.shadowMap.enabled = true;
@@ -57,11 +65,12 @@ var edge_visibility = false;
         
     // Create a camera, zoom it out from the model a bit, and add it to the scene.
     camera = new THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 20000);
-    camera.position.set(0,0,10);
+    camera.position.set(0,0,5);
     camera_y = new THREE.Object3D();
     camera_y.position.set(0,0,0);
     camera_piv = new THREE.Object3D();
-    camera_piv.position.set(0,0,0);
+    camera_piv.position.set(1,0,0);
+    camera_y.rotateY(0.7);
     camera_y.add(camera_piv);
     camera_piv.add( camera );
         camera_piv.rotateX(-0.2);
@@ -102,6 +111,35 @@ var edge_visibility = false;
     instructmenu_sprite.visible = false;
     camera.add( instructmenu_sprite );
 
+    var gameMenuMap = new THREE.TextureLoader().load( "textures/ui_game.png" );
+    var gameMenuMat = new THREE.SpriteMaterial( { map: gameMenuMap, color: 0xffffff } );
+    gameMenuMat.depthTest = false
+    gamemenu_sprite = new THREE.Sprite( gameMenuMat );
+    gamemenu_sprite.position.set(0,0,-1);
+    gamemenu_sprite.scale.set(0.9,0.9,0.9);
+    gamemenu_sprite.visible = false;
+    camera.add( gamemenu_sprite );
+
+    var pauseMenuMap = new THREE.TextureLoader().load( "textures/ui_pausemenu.png" );
+    var pauseMenuMat = new THREE.SpriteMaterial( { map: pauseMenuMap, color: 0xffffff } );
+    pauseMenuMat.depthTest = false
+    pausemenu_sprite = new THREE.Sprite( pauseMenuMat );
+    pausemenu_sprite.position.set(0,0,-1);
+    pausemenu_sprite.scale.set(0.9,0.9,0.9);
+    pausemenu_sprite.visible = false;
+    camera.add( pausemenu_sprite );
+
+    easyMap = new THREE.TextureLoader().load( "textures/ui_easy.png" );
+    mediumMap = new THREE.TextureLoader().load( "textures/ui_medium.png" );
+    hardMap = new THREE.TextureLoader().load( "textures/ui_hard.png" );
+    var difMat = new THREE.SpriteMaterial( { map: easyMap, color: 0xffffff } );
+    difMat.depthTest = false
+    difsprite = new THREE.Sprite( difMat );
+    difsprite.position.set(0,0,-1);
+    difsprite.scale.set(0.9,0.9,0.9);
+    difsprite.visible = false;
+    camera.add( difsprite );
+
 
 
         scene = new THREE.Scene();
@@ -114,6 +152,10 @@ var edge_visibility = false;
         container = document.getElementById( 'TitleHeader' );
         var WIDTH = container.offsetWidth,
             HEIGHT = container.offsetHeight;
+        if (WIDTH/HEIGHT < 1.1) {
+            WIDTH = container.offsetWidth;
+            HEIGHT = WIDTH / 1.1;
+        }
         camera.aspect = WIDTH / HEIGHT;
         renderer.setSize(WIDTH, HEIGHT);
         camera.updateProjectionMatrix();
@@ -135,21 +177,22 @@ var edge_visibility = false;
 
         scene.add(camera_y);
         var dirLight = new THREE.DirectionalLight(0xffffff, 1 );
-        dirLight.color.set(0xFF8799);
+        //dirLight.color.set(0xFF8799);
         dirLight.position.set( -1, 1.75, 1 );
 
-        var dirLight2 = new THREE.DirectionalLight(0xffffff, 1 );
-        dirLight2.color.set(0xC95D63);
+        var dirLight2 = new THREE.DirectionalLight(0xFFFFFF, 1 );
+        //dirLight2.color.set(0xC95D63);
         dirLight2.position.set( 0.5,0,-1 );
 
         scene.add( dirLight );
         scene.add( dirLight2 );
-        console.log(scene);
+        //console.log(scene);
     }
 
     function generateNewVoxelStructure(option) {
       edges_in_scene = [];
       lambmat = new THREE.MeshLambertMaterial();
+      lambmat.color.setHex(0xff5f72);
 
       voxelstruct = new VoxelStruct(20, scene);
       console.log("n: " + voxelstruct.getn());
@@ -160,11 +203,18 @@ var edge_visibility = false;
           console.log(saved_puzzle);
         parsePuzzle(saved_puzzle, voxelstruct);
       } else {
-        generatePuzzle(voxelstruct, num_generations,lambmat);
+        var good_puzzle = generatePuzzle(voxelstruct, num_generations,lambmat);
+        while(!good_puzzle) {
+            console.log("bad puzzle");
+            generateNewScene();
+            voxelstruct = new VoxelStruct(20, scene);
+            console.log("n: " + voxelstruct.getn());
+            good_puzzle = generatePuzzle(voxelstruct, num_generations,lambmat);
+        }
       }
 
       var wire_mat = new THREE.LineBasicMaterial( { color: 0xffffff } );
-      var edge_mat = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+      var edge_mat = new THREE.LineBasicMaterial( { color: 0x00dbff } );
 
 
 
@@ -282,6 +332,9 @@ var edge_visibility = false;
     dx = 0;
     dy = 0;
     document.addEventListener('mousedown', function(event) {
+        if(mode == 3) {
+            return;
+        }
         if(mode != 0) {
         var ctrlKeyPressed = event.altKey;
         var shiftKeyPressed = event.shiftKey;
@@ -370,12 +423,16 @@ var edge_visibility = false;
     });
 
     function win() {
+        turnOffUI();
         winmenu_sprite.visible = true;
+        difsprite.visible = true;
         mode = 2;
     }
 
     function lose() {
+        turnOffUI();
         losemenu_sprite.visible = true;
+        difsprite.visible = true;
         mode = 2;
     }
 
@@ -384,6 +441,9 @@ var edge_visibility = false;
         losemenu_sprite.visible = false;
         mainmenu_sprite.visible = false;
         instructmenu_sprite.visible = false;
+        gamemenu_sprite.visible = false;
+        pausemenu_sprite.visible = false;
+        difsprite.visible = false;
     }
 
     x_rot = 0;
@@ -433,8 +493,22 @@ var edge_visibility = false;
         //camera.lookAt(camera_piv.position);
     } else if(event.keyCode == 73) {
         if(mode == 0) {
-            turnOffUI();
-            instructmenu_sprite.visible = true;
+            if(!instructmenu_sprite.visible) {
+                turnOffUI();
+                instructmenu_sprite.visible = true;
+            } else {
+                turnOffUI();
+                mainmenu_sprite.visible = true;
+            }
+        } else if (mode = 3) {
+            if(!instructmenu_sprite.visible) {
+                turnOffUI();
+                instructmenu_sprite.visible = true;
+            } else {
+                turnOffUI();
+                pausemenu_sprite.visible = true;
+                difsprite.visible = true;
+            }
         }
     } else if(event.keyCode == 79) {
         turnOffUI();
@@ -442,27 +516,29 @@ var edge_visibility = false;
         console.log(saved_puzzle);
         generateNewScene();
         generateNewVoxelStructure(1);
+        mode = 1;
+        gamemenu_sprite.visible = true;
     } else if(event.keyCode == 80) {
         turnOffUI();
         generateNewScene();
         generateNewVoxelStructure(2);
+        mode = 1;
+        gamemenu_sprite.visible = true;
     }  else if(event.keyCode == 32) {
         if(mode == 0) {
             turnOffUI();
             generateNewScene();
             generateNewVoxelStructure(2);
+            gamemenu_sprite.visible = true;
             mode = 1;
         }
-
-
-        
-
     } else if(event.keyCode == 190) {
         if(mode == 0) {
             turnOffUI();
             generateNewScene();
             generateNewVoxelStructure(0);
             mode = 1;
+            gamemenu_sprite.visible = true;
         }
     } else if(event.keyCode == 69) {
         if(edge_visibility){
@@ -476,6 +552,17 @@ var edge_visibility = false;
                 edges_in_scene[i].visible = true;
             }
         }
+    } else if(event.keyCode == 77) {
+        if(mode == 1) {
+            turnOffUI();
+            pausemenu_sprite.visible = true;
+            difsprite.visible = true;
+            mode = 3;
+        } else if (mode == 3) {
+            turnOffUI();
+            mode = 1;
+            gamemenu_sprite.visible = true;
+        }
     }
     else if(event.keyCode == 48) {
         //easy mode
@@ -484,12 +571,15 @@ var edge_visibility = false;
     else if(event.keyCode == 49) {
         //easy mode
         num_generations = 10;
+        difsprite.material.map = easyMap;
     } else if(event.keyCode == 50) {
         //hard mode
         num_generations = 20;
+        difsprite.material.map = mediumMap;
     } else if(event.keyCode == 51) {
         //super hard mode
         num_generations = 30;
+        difsprite.material.map = hardMap;
     }
     
     });

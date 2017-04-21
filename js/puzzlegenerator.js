@@ -11,6 +11,7 @@ function randomAvailable(options) {
         }
     }
     if(available_options.length == 0){
+        console.log("NO AVAILABLE OPTIONS");
         return -1;
     }
     // //console.log(options);
@@ -19,18 +20,39 @@ function randomAvailable(options) {
     return available_options[idx];
 }
 
+var counter  = 3;
+
 function generate(last, lastlast, voxelstruct, lambmat) {
     //console.log("GENERATING");
     //console.log(lastlast_voxel);
     //console.log(last_voxel);
     var norm_dist = generation_bias.clone();
     norm_dist.normalize();
-    console.log("norm_dist");
-    console.log(norm_dist);
+    var dist = generation_bias.length();
+    //console.log("dist");
+    //console.log(dist);
     var return_voxel;
     var options = [true,true,true,true,true,true,true,true,true,true,true,true];
     var rand_thresh = Math.random();
+    var rand_bias = Math.random();
     //console.log("rand " + rand_thresh)
+    var yp_bias;
+    var xp_bias;
+    var zp_bias;
+    var yn_bias;
+    var xn_bias;
+    var zn_bias;
+    if(dist > num_generations/7 && counter < 0) {
+        yp_bias = norm_dist.y > Math.random();
+        xp_bias = norm_dist.x > Math.random();
+        zp_bias = norm_dist.z > Math.random();
+        yn_bias = -norm_dist.y > Math.random();
+        xn_bias = -norm_dist.x > Math.random();
+        zn_bias = -norm_dist.z > Math.random();
+        counter = 3;
+    }
+    counter--;
+
     if(rand_thresh < 0.8) {
         options[1] = false;
         options[4] = false;
@@ -88,65 +110,107 @@ function generate(last, lastlast, voxelstruct, lambmat) {
         var new_x;
         var new_y;
         var new_z;
-        var new_n;
+        var new_n;   
+
+        if(xp_bias) {
+            options[2] = false;
+            options[5] = false;
+            options[8] = false;
+            options[11] = false;
+        } if (yp_bias) {
+            options[0] = false;
+            options[1] = false;
+            options[2] = false;
+        } if (zp_bias) {
+            options[6] = false;
+            options[7] = false;
+            options[8] = false;
+        } if (xn_bias) {
+            options[0] = false;
+            options[3] = false;
+            options[6] = false;
+            options[9] = false;
+        } if (yn_bias) {
+            options[3] = false;
+            options[4] = false;
+            options[5] = false;
+        } if (zn_bias) {
+            options[9] = false;
+            options[10] = false;
+            options[12] = false;
+        }
+
         var rand_idx = randomAvailable(options);
+
         while(!flag) {
             if(rand_idx == 0) {
+                // +Y, -X (Y)
                 new_x = x - 1;
                 new_y = y + 1;
                 new_z = z;
                 new_n = 1;
             } else if(rand_idx == 1) {
+                // +Y (X)
                 new_x = x;
                 new_y = y + 1;
                 new_z = z;
                 new_n = 0;
             } else if(rand_idx == 2) {
+                // +Y, +X (Y)
                 new_x = x;
                 new_y = y + 1;
                 new_z = z;
                 new_n = 1;
             } else if(rand_idx == 3) {
+                // -Y, -X (Y)
                 new_x = x - 1;
                 new_y = y;
                 new_z = z;
                 new_n = 1;
             } else if(rand_idx == 4) {
+                // -Y (X)
                 new_x = x;
                 new_y = y - 1;
                 new_z = z;
                 new_n = 0;
             } else if(rand_idx == 5) {
+                // -Y, +X (Y)
                 new_x = x;
                 new_y = y;
                 new_z = z;
                 new_n = 1;
             } else if(rand_idx == 6) {
+                // +Z, -X (Z)
                 new_x = x-1;
                 new_y = y;
                 new_z = z+1;
                 new_n = 2;
             } else if(rand_idx == 7) {
+                // +Z (X)
                 new_x = x;
                 new_y = y;
                 new_z = z+1;
                 new_n = 0;
             } else if(rand_idx == 8) {
+                // +Z, +X (Z)
                 new_x = x;
                 new_y = y;
                 new_z = z+1;
                 new_n = 2;
             } else if(rand_idx == 9) {
+                // -Z, -X (Z)
                 new_x = x-1;
                 new_y = y;
                 new_z = z;
                 new_n = 2;
             } else if(rand_idx == 10) {
+                // -Z (X)
                 new_x = x;
                 new_y = y;
                 new_z = z-1;
                 new_n = 0;
             } else if(rand_idx == 11) {
+                // -Z, +X (Z)
                 new_x = x;
                 new_y = y;
                 new_z = z;
@@ -166,7 +230,7 @@ function generate(last, lastlast, voxelstruct, lambmat) {
                 var rand_idx = randomAvailable(options);
             }
             if(rand_idx == -1) {
-                //console.log("BREAK");
+                console.log("BREAK");
                 break;
             }
         }
@@ -235,64 +299,105 @@ function generate(last, lastlast, voxelstruct, lambmat) {
         var new_y;
         var new_z;
         var new_n;
+
+        if(xp_bias) {
+            options[9] = false;
+            options[10] = false;
+            options[11] = false;
+        } if (yp_bias) {
+            options[0] = false;
+            options[3] = false;
+            options[6] = false;
+            options[9] = false;
+        } if (zp_bias) {
+            options[3] = false;
+            options[4] = false;
+            options[5] = false;
+        } if (xn_bias) {
+            options[6] = false;
+            options[7] = false;
+            options[8] = false;
+        } if (yn_bias) {
+            options[2] = false;
+            options[5] = false;
+            options[8] = false;
+            options[11] = false;
+        } if (zn_bias) {
+            options[0] = false;
+            options[1] = false;
+            options[2] = false;
+        }
+
         var rand_idx = randomAvailable(options);
         while(!flag) {
             if(rand_idx == 0) {
+                // -Z, +Y (Z)
                 new_x = x;
                 new_y = y;
                 new_z = z;
                 new_n = 2;
             } else if(rand_idx == 1) {
+                // -Z (Y)
                 new_x = x;
                 new_y = y;
                 new_z = z-1;
                 new_n = 1;
             } else if(rand_idx == 2) {
+                // -Z, -Y (Z)
                 new_x = x;
                 new_y = y-1;
                 new_z = z;
                 new_n = 2;
             } else if(rand_idx == 3) {
+                // +Z, +Y (Z)
                 new_x = x;
                 new_y = y;
                 new_z = z+1;
                 new_n = 2;
             } else if(rand_idx == 4) {
+                // +Z (Y)
                 new_x = x;
                 new_y = y;
                 new_z = z+1;
                 new_n = 1;
             } else if(rand_idx == 5) {
+                // +Z, -Y (Z)
                 new_x = x;
                 new_y = y-1;
                 new_z = z+1;
                 new_n = 2;
             } else if(rand_idx == 6) {
+                // -X, +Y (X)
                 new_x = x;
                 new_y = y;
                 new_z = z;
                 new_n = 0;
             } else if(rand_idx == 7) {
+                // -X (Y)
                 new_x = x-1;
                 new_y = y;
                 new_z = z;
                 new_n = 1;
             } else if(rand_idx == 8) {
+                // -X, -Y (X)
                 new_x = x;
                 new_y = y-1;
                 new_z = z;
                 new_n = 0;
             } else if(rand_idx == 9) {
+                // +X, +Y (X)
                 new_x = x+1;
                 new_y = y;
                 new_z = z;
                 new_n = 0;
             } else if(rand_idx == 10) {
+                // +X (Y)
                 new_x = x+1;
                 new_y = y;
                 new_z = z;
                 new_n = 1;
             } else if(rand_idx == 11) {
+                // +X, -Y (X)
                 new_x = x+1;
                 new_y = y-1;
                 new_z = z;
@@ -312,7 +417,7 @@ function generate(last, lastlast, voxelstruct, lambmat) {
                 var rand_idx = randomAvailable(options);
             }
             if(rand_idx == -1) {
-                //console.log("BREAK");
+                console.log("BREAK");
                 break;
             }
         }
@@ -377,64 +482,105 @@ function generate(last, lastlast, voxelstruct, lambmat) {
         var new_y;
         var new_z;
         var new_n;
+
+        if(xp_bias) {
+            options[9] = false;
+            options[10] = false;
+            options[11] = false;
+        } if (yp_bias) {
+            options[0] = false;
+            options[1] = false;
+            options[2] = false;
+        } if (zp_bias) {
+            options[2] = false;
+            options[5] = false;
+            options[8] = false;
+            options[11] = false;
+        } if (xn_bias) {
+            options[6] = false;
+            options[7] = false;
+            options[8] = false;
+        } if (yn_bias) {
+            options[3] = false;
+            options[4] = false;
+            options[5] = false;
+        } if (zn_bias) {
+            options[0] = false;
+            options[3] = false;
+            options[6] = false;
+            options[9] = false;
+        }
+
         var rand_idx = randomAvailable(options);
         while(!flag) {
             if(rand_idx == 0) {
+                //+Y, -Z (Y)
                 new_x = x;
                 new_y = y + 1;
                 new_z = z - 1;
                 new_n = 1;
             } else if(rand_idx == 1) {
+                // +Y (Z)
                 new_x = x;
                 new_y = y + 1;
                 new_z = z;
                 new_n = 2;
             } else if(rand_idx == 2) {
+                // +Y, +Z (Y)
                 new_x = x;
                 new_y = y + 1;
                 new_z = z;
                 new_n = 1;
             } else if(rand_idx == 3) {
+                // -Y, -Z (Y)
                 new_x = x;
                 new_y = y;
                 new_z = z - 1;
                 new_n = 1;
             } else if(rand_idx == 4) {
+                // -Y (Z)
                 new_x = x;
                 new_y = y - 1;
                 new_z = z;
                 new_n = 2;
             } else if(rand_idx == 5) {
+                // -Y, +Z (Y)
                 new_x = x;
                 new_y = y;
                 new_z = z;
                 new_n = 1;
             } else if(rand_idx == 6) {
+                // -X, -Z (X)
                 new_x = x;
                 new_y = y;
                 new_z = z-1;
                 new_n = 0;
             } else if(rand_idx == 7) {
+                // -X (Z)
                 new_x = x-1;
                 new_y = y;
                 new_z = z;
                 new_n = 2;
             } else if(rand_idx == 8) {
+                // -X, +Z (X)
                 new_x = x;
                 new_y = y;
                 new_z = z;
                 new_n = 0;
             } else if(rand_idx == 9) {
+                // +X, -Z (X)
                 new_x = x+1;
                 new_y = y;
                 new_z = z-1;
                 new_n = 0;
             } else if(rand_idx == 10) {
+                // +X (Z)
                 new_x = x+1;
                 new_y = y;
                 new_z = z;
                 new_n = 2;
             } else if(rand_idx == 11) {
+                // +X, +Z (X)
                 new_x = x+1;
                 new_y = y;
                 new_z = z;
@@ -454,7 +600,7 @@ function generate(last, lastlast, voxelstruct, lambmat) {
                 var rand_idx = randomAvailable(options);
             }
             if(rand_idx == -1) {
-                //console.log("BREAK");
+                console.log("BREAK");
                 break;
             }
         }
@@ -548,14 +694,27 @@ function generatePuzzle(voxelstruct, n, lambmat) {
     parsePuzzle(puzzle, voxelstruct);
     generation_bias = new THREE.Vector3(0,0,0);
     for(var i = 0; i  < n - 2; i++) {
-        generateByPress(voxelstruct,lambmat);
+        if(!generateByPress(voxelstruct,lambmat)){
+            console.log("null block");
+            break;
+        }
     }
+    var meshes = voxelstruct.getAllBlocks();
+    console.log("num meshes: " +meshes.length);
+    if(meshes.length < num_generations*0.75) {
+        return false;
+    }
+    return true;
+
 }
 
 
 function generateByPress(voxelstruct,lambmat) {
     //console.log("FLAG");
     var return_voxel = generate(last_voxel, lastlast_voxel,voxelstruct,lambmat);
+    if(return_voxel == null) {
+        return false;
+    }
     //console.log(return_voxel);
     lastlast_voxel = last_voxel;
     //console.log(lastlast_voxel.id);
@@ -565,6 +724,7 @@ function generateByPress(voxelstruct,lambmat) {
     var lastlastWP = lastlast_voxel.getWorldPos();
     var currDist = new THREE.Vector3(lastWP[0]-lastlastWP[0],lastWP[1]-lastlastWP[1], lastWP[2]- lastlastWP[2]);
     generation_bias.add(currDist);
+    return true;
     // console.log("currDist");
     // console.log(currDist);
     // console.log("generation_bias");
