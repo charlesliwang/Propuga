@@ -89,7 +89,7 @@ var edge_visibility = false;
     winMenuMat.depthTest = false
     winmenu_sprite = new THREE.Sprite( winMenuMat );
     winmenu_sprite.position.set(0,0,-1);
-    winmenu_sprite.scale.set(1,1,1);
+    winmenu_sprite.scale.set(0.9,0.9,0.9);
     winmenu_sprite.visible = false;
     camera.add( winmenu_sprite );
     
@@ -98,7 +98,7 @@ var edge_visibility = false;
     loseMenuMat.depthTest = false
     losemenu_sprite = new THREE.Sprite( loseMenuMat );
     losemenu_sprite.position.set(0,0,-1);
-    losemenu_sprite.scale.set(1,1,1);
+    losemenu_sprite.scale.set(0.9,0.9,0.9);
     losemenu_sprite.visible = false;
     camera.add( losemenu_sprite );
 
