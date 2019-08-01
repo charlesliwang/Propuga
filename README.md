@@ -2,6 +2,8 @@
 
 Propuga is an online puzzle game where each puzzle is procedurally generated. This means that rather than designing every playable puzzle, I’ve designed a program that will generate an infinite number of challenging puzzles.
 
+# [Play it here!](https://charlesliwang.com/Propuga/)
+
 ![](images/propuga_title.png)
 
 ## Gameplay Rules and Design
